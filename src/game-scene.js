@@ -12,11 +12,20 @@ import starfield from "./starfield";
 import { zzfx } from "./lib/zzfx";
 import { onKey } from "./lib/keyboard";
 import { imageAssets } from "./lib/assets";
+import createDialog from "./dialog";
 
 export default function gameScene() {
   onKey(['esc'], () => {
     emit('change-scene', 'menu');
   });
+
+  function processDialogs(dialogs, frame) {
+    dialogs.forEach(obj => {
+      if (frame !== undefined && frame === obj.frame) {
+        dialog.start(obj);
+      }
+    });
+  };
 
   function processPowerups(powerups, frame) {
     const types = [
@@ -84,6 +93,7 @@ export default function gameScene() {
       }
 
       processPowerups(wave.powerups, frame);
+      processDialogs(wave.dialogs, frame);
 
       if (!wave.completed && wave.count === wave.total && wave.killed === wave.total) {
         wave.completed = true;
@@ -123,6 +133,7 @@ export default function gameScene() {
 
   const ship = createShip();
   const starField = starfield();
+  const dialog = createDialog({ x: 8, y: 224 });
 
   const bulletPool = pool({
     create: gameObject,
@@ -315,10 +326,14 @@ export default function gameScene() {
   const qtEnemies = new Quadtree();
 
   return scene({
-    objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, enemyPool, explosionPool, textScore, textLives, progressShield, textFrames],
+    objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, enemyPool, explosionPool, textScore, textLives, progressShield, dialog],
     level: getLevel(currentLevel, 1) ,//levels[0],
     frame: 0,
     update() {
+      if (dialog.isTalking) {
+        dialog.update();
+        return;
+      }
       processLevel(this.level, this.frame);
       levelText.update();
 
@@ -348,6 +363,7 @@ export default function gameScene() {
       textFrames.text = `${(this.frame + '').padStart(8, '0')} ${(wavesLeft + '').padStart(2, '0')}`;
 
       this.frame++;
+      this.objects.forEach(object => object.update());
     },
     render() {
       this.frame < 100 && levelText.render();

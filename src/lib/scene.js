@@ -11,11 +11,11 @@ export default function scene ({
       Object.assign(this, properties);
     },
     update() {
-      if (this._uf) this._uf();
+      if (this._uf) { this._uf(); return; };
       this.objects.forEach(object => object.update());
     },
     render() {
-      if (this._rf) this._rf();
+      if (this._rf) { this._rf(); };
       this.objects.forEach(object => object.render());
     },
   };

@@ -24,6 +24,18 @@ export default [ // waves
           'AND GOOD LUCK!'
         ],
       ],
+      [ // dialog
+        420, // frame
+        0, // character
+        true, // pause gameplay
+        [ // texts
+          'WE DEPLOYED',
+          'SOME POWERUPS',
+          'TO ENHANCE YOUR',
+          'FIRE POWER,',
+          'SHIELD AND LIVES',
+        ],
+      ],
     ],
     [ // powerups
       [ // powerup
