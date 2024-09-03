@@ -712,7 +712,7 @@
     return scene;
   }
 
-  function createShip () {
+  function createShip() {
     const ctx = getContext();
 
     return gameObject({
@@ -730,12 +730,12 @@
       shield: 100,
       lives: 3,
       score: 0,
-      hit(damage){
+      hit(damage) {
         if (this.imune) return;
         this.shield -= damage;
         this.hitTimer = 1;
         this.shield <= 0 && this.die();
-        zzfx(...[2.3,,330,,.06,.17,2,3.7,,,,,.05,.4,2,.5,.13,.89,.05,.17]); // Hit 56
+        zzfx(...[2.3, , 330, , .06, .17, 2, 3.7, , , , , .05, .4, 2, .5, .13, .89, .05, .17]); // Hit 56
       },
       die() {
         if (this.dying) return;
@@ -750,7 +750,7 @@
       },
       spawn() {
         this.x = ctx.canvas.width / 2;
-        this.y = ctx.canvas.height + 16;
+        this.y = ctx.canvas.height + 32;
         this.scaleX = 2;
         this.scaleY = 2;
         this.shield = 100;
@@ -760,6 +760,8 @@
         this.spawning = true;
         this.ttl = Infinity;
         this.frame = 0;
+        this.ddy = 0;
+        this.dy = 0;
       },
       firePowerup(value) {
         this.fireLevel++;
@@ -781,7 +783,7 @@
 
         keyPressed('arrowright') && this.dx < 5 && (this.ddx = .2, this.sprite = 2);
         keyPressed('arrowleft') && this.dx > -5 && (this.ddx = -.2, this.sprite = 0);
-        
+
         if (keyPressed('space') && this.fireTimer % (15 / (this.fireLevel > 1 ? 2 : 1)) === 0) {
           if (this.fireLevel == 0) {
             emit('ship-fire', this.x - 1);
@@ -807,12 +809,13 @@
 
         this.frame < 100 && (this.ddy = -.03, this.scaleX = this.scaleY = 2 - this.frame / 100);
 
+        this.lives <= 0 && (this.ddx = 0, this.ddy = 0, this.dx = 0, this.dy = 0);
         this.hitTimer > 4 && (this.hitTimer = 0);
         this._update();
 
         this.x > ctx.canvas.width && (this.x = ctx.canvas.width);
         this.x < 0 && (this.x = 0);
-        !this.spawning && this.y > ctx.canvas.height && (this.y = ctx.canvas.height);
+        this.lives > 0 && !this.spawning && this.y > ctx.canvas.height && (this.y = ctx.canvas.height);
         this.y < 0 && (this.y = 0);
 
         this.shield <= 0 && this.die();
@@ -1559,6 +1562,10 @@
       zzfx(...[,,45,.03,.21,.6,4,.9,2,-3,,,,.2,,.9,,.45,.26]); // Explosion 39
     });
 
+    on('game-over', () => {
+      setTimeout(() => emit('change-scene', 'game-over', {score: ship.score}), 2000);
+    });
+
     const qtShip = new Quadtree();
     const qtEnemies = new Quadtree();
 
@@ -1642,6 +1649,40 @@
     });
   }
 
+  function gameOverScene(options) {
+    const { score } = options;
+    onKey(['enter'], () => {
+      emit('change-scene', 'menu');
+    });
+
+    const starField = starfield();
+
+    const titleText = text({
+      text: 'GAME OVER',
+      x: 128,
+      y: 48,
+      align: 'center',
+      scale: 2,
+      color: 'red',
+    });
+    const subtitleText = text({
+      text: `SCORE ${score}`,
+      x: 128,
+      y: 96,
+      align: 'center',
+    });
+    const pressText = text({
+      text: 'PRESS ENTER TO CONTINUE',
+      x: 128,
+      y: 144,
+      align: 'center',
+      color: 'yellow',
+    });
+    return scene({
+      objects: [starField, titleText, subtitleText, pressText],
+    });
+  }
+
   const ctx = setContext(document.getElementById('c').getContext('2d'));
   ctx.imageSmoothingEnabled = false;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -1664,11 +1705,12 @@
 
     onKey('e', toggleExperience);
 
-    on('change-scene', (scene) => {
+    on('change-scene', (scene, options) => {
       offKey(['enter', 'esc']);
       clearEvents(['change-scene']);
       scene === 'game' && (currentScene = gameScene());
       scene === 'menu' && (currentScene = menuScene());
+      scene === 'game-over' && (currentScene = gameOverScene(options));
     });
 
     let currentScene = menuScene();
