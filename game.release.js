@@ -1615,6 +1615,7 @@
       emit('change-scene', 'game');
     });
 
+    const hiscore = localStorage.getItem('hiscore') || 0;
     const starField = starfield();
 
     const titleText = text({
@@ -1631,12 +1632,19 @@
       y: 96,
       align: 'center',
     });
+    const hiscoreText = text({
+      text: `HIGH SCORE ${hiscore}`,
+      x: 128,
+      y: 120,
+      align: 'center',
+      color: 'yellow',
+    });
     const pressText = text({
       text: 'PRESS ENTER TO START',
       x: 128,
       y: 144,
       align: 'center',
-      color: 'yellow',
+      color: 'lightgreen',
     });
     const controlsText = text({
       text: 'ARROWS TO MOVE\nSPACE TO SHOOT',
@@ -1645,12 +1653,13 @@
       align: 'center',
     });
     return scene({
-      objects: [starField, titleText, subtitleText, pressText, controlsText],
+      objects: [starField, titleText, subtitleText, hiscoreText, pressText, controlsText],
     });
   }
 
   function gameOverScene(options) {
     const { score } = options;
+    const hiscore = localStorage.getItem('hiscore') || 0;
     onKey(['enter'], () => {
       emit('change-scene', 'menu');
     });
@@ -1676,11 +1685,26 @@
       x: 128,
       y: 144,
       align: 'center',
-      color: 'yellow',
+      color: 'lightgreen',
     });
-    return scene({
+
+    const gameOverScene = scene({
       objects: [starField, titleText, subtitleText, pressText],
     });
+
+    if (score > hiscore) {
+      localStorage.setItem('hiscore', score);
+      const hiscoreText = text({
+        text: `NEW HIGH SCORE ${score}`,
+        x: 128,
+        y: 120,
+        align: 'center',
+        color: 'yellow',
+      });
+      gameOverScene.objects.push(hiscoreText);
+    }
+
+    return gameOverScene;
   }
 
   const ctx = setContext(document.getElementById('c').getContext('2d'));
