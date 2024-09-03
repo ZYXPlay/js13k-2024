@@ -56,7 +56,7 @@ export default function createDialog ({x = 8, y = 8}) {
     draw() {
       const { context: ctx, image } = this;
       ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, 8, 8);
+      ctx.fillRect(-2, -2, 12, 12);
       ctx.drawImage(image, this.sprites[this.spriteIndex] * 8, 0, 8, 8, 0, 0, 8, 8);
       ctx.translate(16, 0);
       this.text.draw();
