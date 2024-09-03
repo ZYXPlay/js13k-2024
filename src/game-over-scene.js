@@ -6,6 +6,7 @@ import starfield from "./starfield";
 
 export default function gameOverScene(options) {
   const { score } = options;
+  const hiscore = localStorage.getItem('hiscore') || 0;
   onKey(['enter'], () => {
     emit('change-scene', 'menu');
   });
@@ -31,9 +32,24 @@ export default function gameOverScene(options) {
     x: 128,
     y: 144,
     align: 'center',
-    color: 'yellow',
+    color: 'lightgreen',
   });
-  return scene({
+
+  const gameOverScene = scene({
     objects: [starField, titleText, subtitleText, pressText],
   });
+
+  if (score > hiscore) {
+    localStorage.setItem('hiscore', score);
+    const hiscoreText = text({
+      text: `NEW HIGH SCORE ${score}`,
+      x: 128,
+      y: 120,
+      align: 'center',
+      color: 'yellow',
+    });
+    gameOverScene.objects.push(hiscoreText);
+  }
+
+  return gameOverScene;
 }

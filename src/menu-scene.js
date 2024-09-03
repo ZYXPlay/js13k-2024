@@ -9,6 +9,7 @@ export default function menuScene() {
     emit('change-scene', 'game');
   });
 
+  const hiscore = localStorage.getItem('hiscore') || 0;
   const starField = starfield();
 
   const titleText = text({
@@ -25,12 +26,19 @@ export default function menuScene() {
     y: 96,
     align: 'center',
   });
+  const hiscoreText = text({
+    text: `HIGH SCORE ${hiscore}`,
+    x: 128,
+    y: 120,
+    align: 'center',
+    color: 'yellow',
+  });
   const pressText = text({
     text: 'PRESS ENTER TO START',
     x: 128,
     y: 144,
     align: 'center',
-    color: 'yellow',
+    color: 'lightgreen',
   });
   const controlsText = text({
     text: 'ARROWS TO MOVE\nSPACE TO SHOOT',
@@ -39,6 +47,6 @@ export default function menuScene() {
     align: 'center',
   });
   return scene({
-    objects: [starField, titleText, subtitleText, pressText, controlsText],
+    objects: [starField, titleText, subtitleText, hiscoreText, pressText, controlsText],
   });
 }
