@@ -22,6 +22,7 @@ export default [{
     execute([
       `npx google-closure-compiler --js=build/game.release.js --js_output_file=build/out.js --compilation_level=ADVANCED --language_out=ECMASCRIPT_2021 --warning_level=VERBOSE --jscomp_off=* --assume_function_wrapper`,
       `npx uglifyjs build/out.js -c -m -o build/game.js`,
+      `node_modules/ect-bin/vendor/linux/ect -9 -zip -strip build/game.zip build/game.js build/index.html build/font.png build/spritesheet.png`,
       `rm build/out.js`,
       `rm build/game.release.js`,
     ]),
