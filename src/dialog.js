@@ -18,7 +18,9 @@ export default function createDialog ({x = 8, y = 8}) {
     anchor: { x: 0, y: 0 },
     talking: false,
     isTalking: false,
+    stopping: false,
     start(dialog) {
+      this.stopping = false;
       setTimeout(() => {
         this.isTalking = true;
         this.texts = dialog.texts;
@@ -27,6 +29,7 @@ export default function createDialog ({x = 8, y = 8}) {
       this.dy = -2;
     },
     stop() {
+      this.stopping = true;
       this.text.text = '        ';
       this.isTalking = false;
       setTimeout(() => {
@@ -38,9 +41,9 @@ export default function createDialog ({x = 8, y = 8}) {
       this.dy = 2;
     },
     update() {
-      this.y < 224 && (this.dy = 0);
-      this.y > 248 && (this.dy = 0);
-      if (this.texts.length === 0) return;
+      this.y < 224 && (this.dy = 0, this.y = 224);
+      this.y > 248 && (this.dy = 0, this.y = 248);
+      if (this.texts.length == 0) return;
       this.talking = false;
       const t = this.texts[this.textsIndex] + '      ';
       t[this.textIndex] !== ' ' && (this.talking = true);
@@ -48,7 +51,7 @@ export default function createDialog ({x = 8, y = 8}) {
       this.text.text = t.slice(0, this.textIndex);
       this.frame++;
       this.textIndex >= t.length && (this.textsIndex++, this.frame = 0, this.textIndex = 0);
-      this.textsIndex >= this.texts.length && (this.stop());
+      this.textsIndex >= this.texts.length && (!this.stopping && this.stop());
       this.talking && (this.frame % 5 == 0 && this.spriteIndex++);
       this.spriteIndex >= this.sprites.length && (this.spriteIndex = 0);
       this._update();
