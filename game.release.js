@@ -499,6 +499,18 @@
             'AND GOOD LUCK!'
           ],
         ],
+        [ // dialog
+          420, // frame
+          0, // character
+          true, // pause gameplay
+          [ // texts
+            'WE DEPLOYED',
+            'SOME POWERUPS',
+            'TO ENHANCE YOUR',
+            'FIRE POWER,',
+            'SHIELD AND LIVES',
+          ],
+        ],
       ],
       [ // powerups
         [ // powerup
@@ -693,12 +705,10 @@
         Object.assign(this, properties);
       },
       update() {
-        if (this._uf) this._uf();
-        this.objects.forEach(object => object.update());
+        if (this._uf) { this._uf(); return; }      this.objects.forEach(object => object.update());
       },
       render() {
-        if (this._rf) this._rf();
-        this.objects.forEach(object => object.render());
+        if (this._rf) { this._rf(); }      this.objects.forEach(object => object.render());
       },
     };
 
@@ -1269,11 +1279,80 @@
     };
   }
 
+  function createDialog ({x = 8, y = 8}) {
+    return gameObject({
+      name: 'dialog',
+      x: 8,
+      y: 248,
+      image: imageAssets['spritesheet.png'],
+      sprites: [10, 11, 12, 13, 14],
+      text: text({text: '', x: 16, y: 8, align: 'left'}),
+      textIndex: 0,
+      texts: [],
+      textsIndex: 0,
+      spriteIndex: 0,
+      frame: 0,
+      anchor: { x: 0, y: 0 },
+      talking: false,
+      isTalking: false,
+      start(dialog) {
+        setTimeout(() => {
+          this.isTalking = true;
+          this.texts = dialog.texts;
+          this.frame = 0;
+        }, 1000);
+        this.dy = -2;
+      },
+      stop() {
+        this.text.text = '        ';
+        this.isTalking = false;
+        setTimeout(() => {
+          this.texts = [];
+          this.textsIndex = 0;
+          this.textIndex = 0;
+          this.frame = 0;
+        }, 1000);
+        this.dy = 2;
+      },
+      update() {
+        this.y < 224 && (this.dy = 0);
+        this.y > 248 && (this.dy = 0);
+        if (this.texts.length === 0) return;
+        this.talking = false;
+        const t = this.texts[this.textsIndex] + '      ';
+        t[this.textIndex] !== ' ' && (this.talking = true);
+        this.frame % 5 == 0 && (this.textIndex++);
+        this.text.text = t.slice(0, this.textIndex);
+        this.frame++;
+        this.textIndex >= t.length && (this.textsIndex++, this.frame = 0, this.textIndex = 0);
+        this.textsIndex >= this.texts.length && (this.stop());
+        this.talking && (this.frame % 5 == 0 && this.spriteIndex++);
+        this.spriteIndex >= this.sprites.length && (this.spriteIndex = 0);
+        this._update();
+      },
+      draw() {
+        const { context: ctx, image } = this;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, 8, 8);
+        ctx.drawImage(image, this.sprites[this.spriteIndex] * 8, 0, 8, 8, 0, 0, 8, 8);
+        ctx.translate(16, 0);
+        this.text.draw();
+      },
+    });
+  }
+
   function gameScene() {
     onKey(['esc'], () => {
       emit('change-scene', 'menu');
     });
 
+    function processDialogs(dialogs, frame) {
+      dialogs.forEach(obj => {
+        if (frame !== undefined && frame === obj.frame) {
+          dialog.start(obj);
+        }
+      });
+    }
     function processPowerups(powerups, frame) {
       const types = [
         ['powerup-fire', 'green', 5],
@@ -1339,6 +1418,7 @@
         }
 
         processPowerups(wave.powerups, frame);
+        processDialogs(wave.dialogs, frame);
 
         if (!wave.completed && wave.count === wave.total && wave.killed === wave.total) {
           wave.completed = true;
@@ -1378,6 +1458,7 @@
 
     const ship = createShip();
     const starField = starfield();
+    const dialog = createDialog({ x: 8, y: 224 });
 
     const bulletPool = pool({
       create: gameObject,
@@ -1570,10 +1651,14 @@
     const qtEnemies = new Quadtree();
 
     return scene({
-      objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, enemyPool, explosionPool, textScore, textLives, progressShield, textFrames],
+      objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, enemyPool, explosionPool, textScore, textLives, progressShield, dialog],
       level: getLevel(currentLevel, 1) ,//levels[0],
       frame: 0,
       update() {
+        if (dialog.isTalking) {
+          dialog.update();
+          return;
+        }
         processLevel(this.level, this.frame);
         levelText.update();
 
@@ -1603,6 +1688,7 @@
         textFrames.text = `${(this.frame + '').padStart(8, '0')} ${(wavesLeft + '').padStart(2, '0')}`;
 
         this.frame++;
+        this.objects.forEach(object => object.update());
       },
       render() {
         this.frame < 100 && levelText.render();
