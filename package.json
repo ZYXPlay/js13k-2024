@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npx rollup -c rollup.config.mjs -w",
     "build": "NODE_ENV=production && npx rollup -c rollup.config.build.mjs",
+    "deploy": "NODE_ENV=production && npx rollup -c rollup.config.deploy.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
