@@ -307,6 +307,10 @@ export default function gameScene() {
     zzfx(...[,,45,.03,.21,.6,4,.9,2,-3,,,,.2,,.9,,.45,.26]); // Explosion 39
   });
 
+  on('game-over', () => {
+    setTimeout(() => emit('change-scene', 'game-over', {score: ship.score}), 2000);
+  });
+
   const qtShip = new Quadtree();
   const qtEnemies = new Quadtree();
 

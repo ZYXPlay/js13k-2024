@@ -5,7 +5,7 @@ import { keyPressed } from "./lib/keyboard";
 import { emit } from "./lib/events";
 import { zzfx } from "./lib/zzfx";
 
-export default function createShip () {
+export default function createShip() {
   const ctx = getContext();
 
   return gameObject({
@@ -23,12 +23,12 @@ export default function createShip () {
     shield: 100,
     lives: 3,
     score: 0,
-    hit(damage){
+    hit(damage) {
       if (this.imune) return;
       this.shield -= damage;
       this.hitTimer = 1;
       this.shield <= 0 && this.die();
-      zzfx(...[2.3,,330,,.06,.17,2,3.7,,,,,.05,.4,2,.5,.13,.89,.05,.17]); // Hit 56
+      zzfx(...[2.3, , 330, , .06, .17, 2, 3.7, , , , , .05, .4, 2, .5, .13, .89, .05, .17]); // Hit 56
     },
     die() {
       if (this.dying) return;
@@ -43,7 +43,7 @@ export default function createShip () {
     },
     spawn() {
       this.x = ctx.canvas.width / 2;
-      this.y = ctx.canvas.height + 16;
+      this.y = ctx.canvas.height + 32;
       this.scaleX = 2;
       this.scaleY = 2;
       this.shield = 100;
@@ -53,6 +53,8 @@ export default function createShip () {
       this.spawning = true;
       this.ttl = Infinity;
       this.frame = 0;
+      this.ddy = 0;
+      this.dy = 0;
     },
     firePowerup(value) {
       this.fireLevel++;
@@ -74,7 +76,7 @@ export default function createShip () {
 
       keyPressed('arrowright') && this.dx < 5 && (this.ddx = .2, this.sprite = 2);
       keyPressed('arrowleft') && this.dx > -5 && (this.ddx = -.2, this.sprite = 0);
-      
+
       if (keyPressed('space') && this.fireTimer % (15 / (this.fireLevel > 1 ? 2 : 1)) === 0) {
         if (this.fireLevel == 0) {
           emit('ship-fire', this.x - 1);
@@ -100,12 +102,13 @@ export default function createShip () {
 
       this.frame < 100 && (this.ddy = -.03, this.scaleX = this.scaleY = 2 - this.frame / 100);
 
+      this.lives <= 0 && (this.ddx = 0, this.ddy = 0, this.dx = 0, this.dy = 0);
       this.hitTimer > 4 && (this.hitTimer = 0);
       this._update();
 
       this.x > ctx.canvas.width && (this.x = ctx.canvas.width);
       this.x < 0 && (this.x = 0);
-      !this.spawning && this.y > ctx.canvas.height && (this.y = ctx.canvas.height);
+      this.lives > 0 && !this.spawning && this.y > ctx.canvas.height && (this.y = ctx.canvas.height);
       this.y < 0 && (this.y = 0);
 
       this.shield <= 0 && this.die();

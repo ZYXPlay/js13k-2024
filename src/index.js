@@ -4,6 +4,7 @@ import { initKeys, offKey, onKey } from "./lib/keyboard";
 import { loadImage } from "./lib/assets";
 import gameScene from "./game-scene";
 import menuScene from "./menu-scene";
+import gameOverScene from "./game-over-scene";
 import { clearEvents, on } from "./lib/events";
 
 const ctx = setContext(document.getElementById('c').getContext('2d'));
@@ -28,11 +29,12 @@ function toggleExperience() {
 
   onKey('e', toggleExperience);
 
-  on('change-scene', (scene) => {
+  on('change-scene', (scene, options) => {
     offKey(['enter', 'esc']);
     clearEvents(['change-scene']);
     scene === 'game' && (currentScene = gameScene());
     scene === 'menu' && (currentScene = menuScene());
+    scene === 'game-over' && (currentScene = gameOverScene(options));
   });
 
   let currentScene = menuScene();
