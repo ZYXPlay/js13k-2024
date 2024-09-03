@@ -1,2 +1,4 @@
-# js13k-2024
-Entry for JS13K 2024
+# Micro Shooter
+## JS13K 2024 Entry
+
+Live demo at https://zyxplay.github.io/js13k-2024/
