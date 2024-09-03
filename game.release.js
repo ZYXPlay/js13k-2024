@@ -1295,7 +1295,9 @@
       anchor: { x: 0, y: 0 },
       talking: false,
       isTalking: false,
+      stopping: false,
       start(dialog) {
+        this.stopping = false;
         setTimeout(() => {
           this.isTalking = true;
           this.texts = dialog.texts;
@@ -1304,6 +1306,7 @@
         this.dy = -2;
       },
       stop() {
+        this.stopping = true;
         this.text.text = '        ';
         this.isTalking = false;
         setTimeout(() => {
@@ -1315,9 +1318,9 @@
         this.dy = 2;
       },
       update() {
-        this.y < 224 && (this.dy = 0);
-        this.y > 248 && (this.dy = 0);
-        if (this.texts.length === 0) return;
+        this.y < 224 && (this.dy = 0, this.y = 224);
+        this.y > 248 && (this.dy = 0, this.y = 248);
+        if (this.texts.length == 0) return;
         this.talking = false;
         const t = this.texts[this.textsIndex] + '      ';
         t[this.textIndex] !== ' ' && (this.talking = true);
@@ -1325,7 +1328,7 @@
         this.text.text = t.slice(0, this.textIndex);
         this.frame++;
         this.textIndex >= t.length && (this.textsIndex++, this.frame = 0, this.textIndex = 0);
-        this.textsIndex >= this.texts.length && (this.stop());
+        this.textsIndex >= this.texts.length && (!this.stopping && this.stop());
         this.talking && (this.frame % 5 == 0 && this.spriteIndex++);
         this.spriteIndex >= this.sprites.length && (this.spriteIndex = 0);
         this._update();
@@ -1333,7 +1336,7 @@
       draw() {
         const { context: ctx, image } = this;
         ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, 8, 8);
+        ctx.fillRect(-2, -2, 12, 12);
         ctx.drawImage(image, this.sprites[this.spriteIndex] * 8, 0, 8, 8, 0, 0, 8, 8);
         ctx.translate(16, 0);
         this.text.draw();
@@ -1394,7 +1397,7 @@
         }
       });
     }
-    function processLevel(level, frame) {
+    function processLevel(level, frame, doDialogs = true) {
       level.waves.forEach(wave => {
         const waveFrame = frame - wave.frame;
         const totalFrames = wave.frame + (wave.total * wave.interval);
@@ -1418,7 +1421,7 @@
         }
 
         processPowerups(wave.powerups, frame);
-        processDialogs(wave.dialogs, frame);
+        doDialogs && processDialogs(wave.dialogs, frame);
 
         if (!wave.completed && wave.count === wave.total && wave.killed === wave.total) {
           wave.completed = true;
@@ -1659,7 +1662,7 @@
           dialog.update();
           return;
         }
-        processLevel(this.level, this.frame);
+        processLevel(this.level, this.frame, virtualLevel == currentLevel);
         levelText.update();
 
         qtShip.clear();
