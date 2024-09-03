@@ -69,7 +69,7 @@ export default function gameScene() {
     });
   };
 
-  function processLevel(level, frame) {
+  function processLevel(level, frame, doDialogs = true) {
     level.waves.forEach(wave => {
       const waveFrame = frame - wave.frame;
       const totalFrames = wave.frame + (wave.total * wave.interval);
@@ -93,7 +93,7 @@ export default function gameScene() {
       }
 
       processPowerups(wave.powerups, frame);
-      processDialogs(wave.dialogs, frame);
+      doDialogs && processDialogs(wave.dialogs, frame);
 
       if (!wave.completed && wave.count === wave.total && wave.killed === wave.total) {
         wave.completed = true;
@@ -334,7 +334,7 @@ export default function gameScene() {
         dialog.update();
         return;
       }
-      processLevel(this.level, this.frame);
+      processLevel(this.level, this.frame, virtualLevel == currentLevel);
       levelText.update();
 
       qtShip.clear();
