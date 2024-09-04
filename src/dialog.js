@@ -1,8 +1,15 @@
 import { imageAssets } from "./lib/assets";
 import gameObject from "./lib/game-object";
 import text from "./lib/text";
+import { zzfx } from "./lib/zzfx";
 
 export default function createDialog ({x = 8, y = 8}) {
+  const synth = window.speechSynthesis;
+  const voice = synth.getVoices().filter(voice => voice.name === 'Grandpa (English (UK))')[0];
+  // Grandpa (English (UK))
+  // Fred (en-US)
+  let utterThis;
+
   return gameObject({
     name: 'dialog',
     x: 8,
@@ -23,7 +30,7 @@ export default function createDialog ({x = 8, y = 8}) {
       this.stopping = false;
       setTimeout(() => {
         this.isTalking = true;
-        this.texts = dialog.texts;
+        this.texts = ['', ...dialog.texts];
         this.frame = 0;
       }, 1000);
       this.dy = -2;
@@ -45,12 +52,27 @@ export default function createDialog ({x = 8, y = 8}) {
       this.y > 248 && (this.dy = 0, this.y = 248);
       if (this.texts.length == 0) return;
       this.talking = false;
-      const t = this.texts[this.textsIndex] + '      ';
+      let t = this.texts[this.textsIndex] + '      ';
       t[this.textIndex] !== ' ' && (this.talking = true);
-      this.frame % 5 == 0 && (this.textIndex++);
+      this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfx(...[1.5,,261,.01,.02,.08,1,1.5,-0.5,,,-0.5,,,,,.9,.05]));
       this.text.text = t.slice(0, this.textIndex);
       this.frame++;
-      this.textIndex >= t.length && (this.textsIndex++, this.frame = 0, this.textIndex = 0);
+      if (this.textIndex >= t.length) {      
+        this.textsIndex++;
+        this.frame = 0;
+        this.textIndex = 0;
+
+        if (this.textsIndex < this.texts.length) {
+          let utterThis = new SpeechSynthesisUtterance(this.texts[this.textsIndex]);
+          utterThis.lang = 'en-US';
+          utterThis.pitch = 1.2;
+          utterThis.rate = 0.8;
+          utterThis.volume = 1;
+          utterThis.voice = voice;
+          synth.speak(utterThis);
+        }
+
+      };
       this.textsIndex >= this.texts.length && (!this.stopping && this.stop());
       this.talking && (this.frame % 5 == 0 && this.spriteIndex++);
       this.spriteIndex >= this.sprites.length && (this.spriteIndex = 0);

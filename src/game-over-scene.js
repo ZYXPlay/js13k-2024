@@ -1,3 +1,4 @@
+import createDialog from "./dialog";
 import { emit } from "./lib/events";
 import { onKey } from "./lib/keyboard";
 import scene from "./lib/scene";
@@ -35,8 +36,25 @@ export default function gameOverScene(options) {
     color: 'lightgreen',
   });
 
+  const dialog = createDialog({ x: 8, y: 224 });
+
   const gameOverScene = scene({
-    objects: [starField, titleText, subtitleText, pressText],
+    objects: [starField, titleText, subtitleText, pressText, dialog],
+  });
+
+  const texts = [
+    'GOOD BYE CAPTAIN @        ',
+    'THE ENEMY HAS WON',
+    'BUT... HEY!     ',
+    'THIS IS JUST A GAME',
+  ];
+  if (score > hiscore) {
+    texts.push(`YOU HAVE A NEW HIGH SCORE!`);
+  } else {
+    texts.push('TRY TO BEAT YOUR HIGH SCORE!');
+  }
+  dialog.start({
+    texts
   });
 
   if (score > hiscore) {

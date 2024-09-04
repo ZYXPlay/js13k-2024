@@ -4,7 +4,7 @@ export default [ // waves
     false, // wait for previous wave
     4, // enemy type
     false, // rotate
-    3, // total
+    2, // total
     330, // interval
     false, // loop
     0, // mode
@@ -29,11 +29,10 @@ export default [ // waves
         0, // character
         true, // pause gameplay
         [ // texts
-          'WE DEPLOYED',
-          'SOME POWERUPS',
-          'TO ENHANCE YOUR',
-          'FIRE POWER,',
-          'SHIELD AND LIVES',
+          'WE DEPLOYED SOME POWERUPS',
+          '',
+          'TO ENHANCE YOUR FIRE POWER',
+          'AND RECHARGE YOUR SHIELD',
         ],
       ],
     ],
@@ -55,7 +54,7 @@ export default [ // waves
     ],
   ],
   [
-    200, // start at frame
+    400, // start at frame
     true, // wait for previous wave
     5, // enemy type
     true, // rotate
@@ -69,7 +68,7 @@ export default [ // waves
   ],
 
   [
-    400, // start at frame
+    600, // start at frame
     true, // wait for previous wave
     6, // enemy type
     true, // rotate
@@ -83,7 +82,7 @@ export default [ // waves
   ],
 
   [
-    600, // start at frame
+    800, // start at frame
     true, // wait for previous wave
     7, // enemy type
     false, // rotate
