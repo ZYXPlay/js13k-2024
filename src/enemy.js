@@ -86,9 +86,9 @@ export default function createEnemy (props = {}) {
       this.frame > 50 && this.fireTimer++;
 
       if (this.fireTimer > 10 && this.fireTimer < 70) {
-        this.imune = true;
-      } else {
         this.imune = false;
+      } else {
+        this.imune = true;
       }
 
       this.fireMode === 2 && (this.fireTimer < 10 || this.fireTimer > 70) && this._update();
