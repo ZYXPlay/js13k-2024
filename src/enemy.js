@@ -27,6 +27,7 @@ export default function createEnemy (props = {}) {
     isBoss: false,
     bossRadius: 30,
     bossSpeed: 40,
+    fireMode: 0,
     ...props,
     hit(damage) {
       this.shield -= damage;
@@ -74,12 +75,24 @@ export default function createEnemy (props = {}) {
 
       this.scaleX = this.scaleY = scale;
 
-      Math.random() > 0.995 && emit('enemy-fire', this, this.rotate ? 1 : 0);
+      this.fireMode !== 2 && Math.random() > 0.995 && emit('enemy-fire', this, this.fireMode);
+
+      if (this.fireMode === 2 && (this.fireTimer == 20 || this.fireTimer == 40 || this.fireTimer == 60)) {
+        emit('enemy-fire', this, this.fireMode);
+      }
+      this.fireTimer > 300 && (this.fireTimer = 0);
 
       this.hitTimer > 0 && this.hitTimer++;
-      this.fireTimer++;
+      this.frame > 50 && this.fireTimer++;
 
-      this._update();
+      if (this.fireTimer > 10 && this.fireTimer < 70) {
+        this.imune = true;
+      } else {
+        this.imune = false;
+      }
+
+      this.fireMode === 2 && (this.fireTimer < 10 || this.fireTimer > 70) && this._update();
+      this.fireMode !== 2 && this._update();
 
       this.ttl <= 0 && this.dying && (emit('explosion', this.x, this.y, this.isBoss ? 60 : 20, this.isBoss ? 10 : 5, explosionColors[this.sprite]));
     },
@@ -87,7 +100,7 @@ export default function createEnemy (props = {}) {
       const { context: ctx } = this;
       // @todo drawing only after frame 1 to avoid scale flickering
       this.frame > 1 && !this.isBoss && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, 8, 8);
-      this.frame > 1 && this.isBoss && ctx.drawImage(this.image16, 0, 0, 16, 16, 0, 0, 16, 16);
+      this.frame > 1 && this.isBoss && ctx.drawImage(this.image16, 16 * this.sprite, 0, 16, 16, 0, 0, 16, 16);
 
       if (this.frame > 1 && this.isBoss) {
         const bar = 20 * this.shield / this.maxShield;

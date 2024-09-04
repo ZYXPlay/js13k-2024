@@ -13,6 +13,7 @@ import { zzfx } from "./lib/zzfx";
 import { onKey } from "./lib/keyboard";
 import { imageAssets } from "./lib/assets";
 import createDialog from "./dialog";
+import createEnemyBullet from "./enemy-bullet";
 
 export default function gameScene() {
   onKey(['esc'], () => {
@@ -45,6 +46,7 @@ export default function gameScene() {
           loop: parent.loop,
           path: parent.path,
           anglePlacement: degToRad(angle),
+          fireMode: child[4],
           wave: parent.wave,
         });
       };
@@ -130,6 +132,8 @@ export default function gameScene() {
           sprite: wave.sprite,
           parent: null,
           isBoss: false,
+          fireMode: wave.fireMode,
+          fireTimer: 0,
           wave,
         });
         processChildren(wave.children || [], enemy);
@@ -170,8 +174,8 @@ export default function gameScene() {
   }
 
   let
-    virtualLevel = 1,
-    currentLevel = 1;
+    virtualLevel = 2,
+    currentLevel = 2;
 
   const ship = createShip();
   const starField = starfield();
@@ -183,7 +187,7 @@ export default function gameScene() {
   });
 
   const enemyBulletPool = pool({
-    create: gameObject,
+    create: createEnemyBullet, // gameObject,
     maxSize: 100,
   });
 
@@ -281,26 +285,31 @@ export default function gameScene() {
     const vx = ship.x - 4 - x;
     const vy = ship.y - y;
     const dist = Math.hypot(vx, vy) / 1;
-    enemyBulletPool.get({
-      name: 'enemy-bullet',
-      x: x + 4,
-      y,
-      dx: mode == 0 ? 0 : vx / dist,
-      dy: mode == 0 ? 1.5 : vy / dist,
-      width: 2,
-      height: 2,
-      ttl: 400,
-      die() {
-        this.ttl = 0;
-        this.x = -100;
-        this.y = -100;
-      },
-      draw() {
-        const { context: ctx } = this;
-        ctx.fillStyle = 'red';
-        ctx.fillRect(0, 0, this.width, this.width);
-      },
-    });
+    if (mode === 2) {
+      for (let i = 0; i < 12; i++) {
+        const dx = Math.cos(degToRad(30 * i)) * 1;
+        const dy = Math.sin(degToRad(30 * i)) * 1;
+        enemyBulletPool.get({
+          name: 'enemy-bullet',
+          x: x,
+          y: y,
+          dx,
+          dy,
+          frame: 0,
+          ttl: 400,
+        });
+      }
+    } else {
+      enemyBulletPool.get({
+        name: 'enemy-bullet',
+        x: x + 4,
+        y: y + 4,
+        dx: mode == 0 ? 0 : vx / dist,
+        dy: mode == 0 ? 1.5 : vy / dist,
+        frame: 0,
+        ttl: 400,
+      });
+    }
     zzfx(...[.3,,222,.02,.04,.09,3,.3,11,10,,,,,15,,,.53,.17]); // Shoot 141
   });
 
