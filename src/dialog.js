@@ -37,7 +37,7 @@ export default function createDialog ({x = 8, y = 8}) {
         this.isTalking = true;
         this.texts = ['', ...dialog.texts];
         this.frame = 0;
-      }, 1000);
+      }, 2000);
       this.dy = -2;
     },
     stop() {
@@ -54,14 +54,14 @@ export default function createDialog ({x = 8, y = 8}) {
       this.dy = 2;
     },
     update() {
-      this.y < 224 && (this.dy = 0, this.y = 224);
+      this.y < 200 && (this.dy = 0, this.y = 200);
       this.y > 248 && (this.dy = 0, this.y = 248);
       if (this.texts.length == 0) return;
       this.talking = false;
       let t = this.texts[this.textsIndex] + '      ';
       t[this.textIndex] !== ' ' && (this.talking = true);
       this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfx(...[1.5,,261,.01,.02,.08,1,1.5,-0.5,,,-0.5,,,,,.9,.05]));
-      this.text.text = t.slice(0, this.textIndex);
+      this.textsIndex < this.texts.length && (this.text.text = t.slice(0, this.textIndex));
       this.frame++;
       if (this.textIndex >= t.length) {      
         this.textsIndex++;
