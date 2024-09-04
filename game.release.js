@@ -392,7 +392,7 @@
   createBuffer(1,h,R);p.getChannelData(0).set(k);b=zzfxX.createBufferSource();
   b.buffer=p;b.connect(zzfxX.destination);b.start();};
 
-  function createEnemy (props) {
+  function createEnemy (props = {}) {
     const explosionColors = [null, null, null, 'purple', 'red', 'cyan', 'green', 'yellow', 'pink', 'orange'];
     return gameObject({
       name: 'enemy',
@@ -408,6 +408,11 @@
       shield: 2,
       imune: true,
       dying: false,
+      parent: props.parent,
+      anglePlacement: props.anglePlacement || 0,
+      isBoss: false,
+      bossRadius: 30,
+      bossSpeed: 40,
       ...props,
       hit(damage) {
         this.shield -= damage;
@@ -416,7 +421,8 @@
         zzfx(...[2.3,,330,,.06,.17,2,3.7,,,,,.05,.4,2,.5,.13,.89,.05,.17]); // Hit 56
       },
       die() {
-        this.wave.killed++;
+        this.wave && this.wave.killed++;
+        this.parent && this.parent.childrenKilled++;
         this.imune = true;
         this.dying = true;
         this.ttl = 10;
@@ -428,6 +434,11 @@
         this.x = Math.floor(xy.x);
         this.y = Math.floor(xy.y);
 
+        if (this.parent) {
+          this.x = this.parent.x + Math.cos(this.frame / this.parent.bossSpeed + this.anglePlacement) * this.parent.bossRadius;
+          this.y = this.parent.y + Math.sin(this.frame / this.parent.bossSpeed + this.anglePlacement) * this.parent.bossRadius;
+        }
+
         this.hitTimer > 4 && (this.hitTimer = 0);
 
         this.rotate && (this.rotation = degToRad(90) + (angleToTarget(xy, nextXy)));
@@ -435,7 +446,7 @@
 
         if (this.frame >= this.path.getTotalLength()) {
           this.frame = 0;
-          !this.loop && (this.wave.killed++, this.ttl = 0);
+          !this.loop && (this.wave && this.wave.killed++, this.ttl = 0);
         }
     
         let scale = clamp(0, 1, this.frame / 50);
@@ -461,7 +472,26 @@
       draw() {
         const { context: ctx } = this;
         // @todo drawing only after frame 1 to avoid scale flickering
-        this.frame > 1 && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, 8, 8);
+        this.frame > 1 && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, this.isBoss ? 16 : 8, this.isBoss ? 16 : 8);
+
+        if (this.frame > 1 && this.isBoss) {
+          const bar = 20 * this.shield / this.maxShield;
+          ctx.save();
+          // ctx.scale(2-this.scaleX, 2-this.scaleY);
+          ctx.translate(this.width / 2, this.height / 2);
+          ctx.rotate(-this.rotation);
+
+          ctx.fillStyle = "white";
+          ctx.fillRect(-12, -16 , 24, 6);
+          ctx.fillStyle = "black";
+          ctx.fillRect(-11, -15 , 22, 4);
+          ctx.fillStyle = "green";
+          if (this.shield < this.maxShield / 4) {
+            ctx.fillStyle = "red";
+          }
+          ctx.fillRect(-10, -14 , bar, 2);
+          ctx.restore();
+        }
 
         if (this.hitTimer) {
           ctx.globalCompositeOperation = "source-atop";
@@ -479,7 +509,7 @@
       false, // wait for previous wave
       4, // enemy type
       false, // rotate
-      3, // total
+      2, // total
       330, // interval
       false, // loop
       0, // mode
@@ -504,11 +534,10 @@
           0, // character
           true, // pause gameplay
           [ // texts
-            'WE DEPLOYED',
-            'SOME POWERUPS',
-            'TO ENHANCE YOUR',
-            'FIRE POWER,',
-            'SHIELD AND LIVES',
+            'WE DEPLOYED SOME POWERUPS',
+            '',
+            'TO ENHANCE YOUR FIRE POWER',
+            'AND RECHARGE YOUR SHIELD',
           ],
         ],
       ],
@@ -530,7 +559,7 @@
       ],
     ],
     [
-      200, // start at frame
+      400, // start at frame
       true, // wait for previous wave
       5, // enemy type
       true, // rotate
@@ -544,7 +573,7 @@
     ],
 
     [
-      400, // start at frame
+      600, // start at frame
       true, // wait for previous wave
       6, // enemy type
       true, // rotate
@@ -558,7 +587,7 @@
     ],
 
     [
-      600, // start at frame
+      800, // start at frame
       true, // wait for previous wave
       7, // enemy type
       false, // rotate
@@ -572,16 +601,66 @@
     ],
   ];
 
+  var l02 = [ // waves
+    [ // wave
+      200, // start at frame
+      false, // wait for previous wave
+      9, // enemy type
+      true, // rotate
+      1, // total
+      50, // interval
+      true, // loop
+      0, // mode
+      'M131 57s-56 130 0 129c57 0 99-32 69-67s-33-85-69-75-71 38-71 75c1 37 25 52 64 51 39 0 61-22 60-51-1-30-21-46-47-47-25-1-56 17-56 47 0 29 12 32 43 29s39-11 39-29-6-25-26-25-32 4-36 25c-3 20 9 18 23 11 13-7 17-11 17-11', // path
+      // 'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
+      [ // dialogs
+        [ // dialog
+          99, // frame
+          0, // character
+          true, // pause gameplay
+          [ // texts
+            'SOMETHING BIG IS COMING',
+          ],
+        ],
+      ],
+      [ // powerups
+        [ // powerup
+          200, // frame
+          120, // x
+          .5, // speed
+          0, // type
+          10, // value
+        ],
+        [ // powerup
+          400, // frame
+          200, // x
+          1, // speed
+          1, // type
+          10, // value
+        ],
+      ],
+      [ // children
+        [ // child
+          8, // enemy type
+          true, // rotate
+          16, // total
+        ],
+      ],
+    ],
+  ];
+
   function getLevel(level, virtualLevel) {
     switch (level) {
       case 1:
         return parseLevel(l01, virtualLevel);
+      case 2:
+        return parseLevel(l02, virtualLevel);
       default:
         return parseLevel(l01, virtualLevel);
     }
   }
 
-  const totalLevels = 1;
+  const totalLevels = 2;
 
   function parseDialog(dialog) {
     const [frame, character, pause, texts] = dialog;
@@ -608,14 +687,14 @@
     const waves = [];
 
     level.forEach((wave) => {
-      const [frame, previous, sprite, rotate, total, interval, loop, mode, path, dialogs, powerups] = wave;
+      const [frame, previous, sprite, rotate, total, interval, loop, mode, path, dialogs, powerups, children = []] = wave;
       waves.push({
         frame,
         previous,
         sprite,
         rotate,
-        total: total + Math.floor(virtualLevel / 4),
-        interval: interval - virtualLevel > 5 ? interval - virtualLevel : 5,
+        total: children.length > 0 ? total : total + Math.floor(virtualLevel / 4),
+        interval,
         loop,
         mode,
         path: createPath(path),
@@ -624,10 +703,11 @@
         count: 0,
         completed: false,
         killed: 0,
+        children,
       });
     });
 
-    return {waves};
+    return { waves };
   }
 
   function pool({
@@ -1280,6 +1360,9 @@
   }
 
   function createDialog ({x = 8, y = 8}) {
+    const synth = window.speechSynthesis;
+    const voice = synth.getVoices().filter(voice => voice.name === 'Grandpa (English (UK))')[0];
+
     return gameObject({
       name: 'dialog',
       x: 8,
@@ -1300,7 +1383,7 @@
         this.stopping = false;
         setTimeout(() => {
           this.isTalking = true;
-          this.texts = dialog.texts;
+          this.texts = ['', ...dialog.texts];
           this.frame = 0;
         }, 1000);
         this.dy = -2;
@@ -1322,13 +1405,27 @@
         this.y > 248 && (this.dy = 0, this.y = 248);
         if (this.texts.length == 0) return;
         this.talking = false;
-        const t = this.texts[this.textsIndex] + '      ';
+        let t = this.texts[this.textsIndex] + '      ';
         t[this.textIndex] !== ' ' && (this.talking = true);
-        this.frame % 5 == 0 && (this.textIndex++);
+        this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfx(...[1.5,,261,.01,.02,.08,1,1.5,-0.5,,,-0.5,,,,,.9,.05]));
         this.text.text = t.slice(0, this.textIndex);
         this.frame++;
-        this.textIndex >= t.length && (this.textsIndex++, this.frame = 0, this.textIndex = 0);
-        this.textsIndex >= this.texts.length && (!this.stopping && this.stop());
+        if (this.textIndex >= t.length) {      
+          this.textsIndex++;
+          this.frame = 0;
+          this.textIndex = 0;
+
+          if (this.textsIndex < this.texts.length) {
+            let utterThis = new SpeechSynthesisUtterance(this.texts[this.textsIndex]);
+            utterThis.lang = 'en-US';
+            utterThis.pitch = 1.2;
+            utterThis.rate = 0.8;
+            utterThis.volume = 1;
+            utterThis.voice = voice;
+            synth.speak(utterThis);
+          }
+
+        }      this.textsIndex >= this.texts.length && (!this.stopping && this.stop());
         this.talking && (this.frame % 5 == 0 && this.spriteIndex++);
         this.spriteIndex >= this.sprites.length && (this.spriteIndex = 0);
         this._update();
@@ -1349,6 +1446,36 @@
       emit('change-scene', 'menu');
     });
 
+    function processChildren(children, parent) {
+      if (children.length === 0) return;
+      parent.childrenKilled = 0;
+      parent.bossRadius = 30;
+      parent.bossSpeed = 100;
+      parent.isBoss = true;
+      parent.width = 16;
+      parent.height = 16;
+      parent.shield = 20;
+      parent.maxShield = 20;
+      children.forEach(child => {
+        for (let i = 0; i < child[2]; i++) {
+          const angle = i * (360 / child[2]);
+          enemyPool.get({
+            sprite: child[0],
+            rotate: child[1],
+            ttl: Infinity,
+            imune: true,
+            dying: false,
+            shield: ([5, 6].includes(parent.wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
+            frame: 0,
+            isBoss: false,
+            parent,
+            loop: parent.loop,
+            path: parent.path,
+            anglePlacement: degToRad(angle),
+            wave: parent.wave,
+          });
+        }    });
+    }
     function processDialogs(dialogs, frame) {
       dialogs.forEach(obj => {
         if (frame !== undefined && frame === obj.frame) {
@@ -1404,7 +1531,7 @@
         if (frame >= wave.frame && frame < totalFrames && wave.count < wave.total && waveFrame % wave.interval === 0) {
           wave.completed = false;
           wave.count += 1;
-          enemyPool.get({
+          const enemy = enemyPool.get({
             x: -100,
             y: -100,
             path: wave.path,
@@ -1416,10 +1543,12 @@
             shield: ([5, 6].includes(wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
             frame: 0,
             sprite: wave.sprite,
+            parent: null,
+            isBoss: false,
             wave,
           });
+          processChildren(wave.children || [], enemy);
         }
-
         processPowerups(wave.powerups, frame);
         doDialogs && processDialogs(wave.dialogs, frame);
 
@@ -1659,6 +1788,7 @@
       frame: 0,
       update() {
         if (dialog.isTalking) {
+          // starField.update();
           dialog.update();
           return;
         }
@@ -1777,8 +1907,25 @@
       color: 'lightgreen',
     });
 
+    const dialog = createDialog({ x: 8, y: 224 });
+
     const gameOverScene = scene({
-      objects: [starField, titleText, subtitleText, pressText],
+      objects: [starField, titleText, subtitleText, pressText, dialog],
+    });
+
+    const texts = [
+      'GOOD BYE CAPTAIN @        ',
+      'THE ENEMY HAS WON',
+      'BUT... HEY!     ',
+      'THIS IS JUST A GAME',
+    ];
+    if (score > hiscore) {
+      texts.push(`YOU HAVE A NEW HIGH SCORE!`);
+    } else {
+      texts.push('TRY TO BEAT YOUR HIGH SCORE!');
+    }
+    dialog.start({
+      texts
     });
 
     if (score > hiscore) {
