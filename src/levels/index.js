@@ -40,12 +40,13 @@ function parseLevel(level, virtualLevel) {
   const waves = [];
 
   level.forEach((wave) => {
-    const [frame, previous, sprite, rotate, total, interval, loop, mode, path, dialogs, powerups, children = []] = wave;
+    const [frame, previous, sprite, rotate, shield, total, interval, loop, mode, path, dialogs, powerups, children = []] = wave;
     waves.push({
       frame,
       previous,
       sprite,
       rotate,
+      shield,
       total: children.length > 0 ? total : total + Math.floor(virtualLevel / 4),
       interval,
       loop,

@@ -4,6 +4,7 @@ export default [ // waves
     false, // wait for previous wave
     4, // enemy type
     false, // rotate
+    1, // shield
     2, // total
     330, // interval
     false, // loop
@@ -58,6 +59,7 @@ export default [ // waves
     true, // wait for previous wave
     5, // enemy type
     true, // rotate
+    2, // shield
     3, // total
     60, // interval
     false, // loop
@@ -72,6 +74,7 @@ export default [ // waves
     true, // wait for previous wave
     6, // enemy type
     true, // rotate
+    4, // shield
     3, // total
     200, // interval
     false, // loop
@@ -86,6 +89,7 @@ export default [ // waves
     true, // wait for previous wave
     7, // enemy type
     false, // rotate
+    4, // shield
     3, // total
     20, // interval
     false, // loop

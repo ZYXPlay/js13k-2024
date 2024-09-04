@@ -2,8 +2,9 @@ export default [ // waves
   [ // wave
     200, // start at frame
     false, // wait for previous wave
-    9, // enemy type
-    true, // rotate
+    0, // enemy type
+    false, // rotate
+    30, // shield
     1, // total
     50, // interval
     true, // loop
@@ -40,6 +41,7 @@ export default [ // waves
       [ // child
         8, // enemy type
         true, // rotate
+        2, // shield
         16, // total
       ],
     ],

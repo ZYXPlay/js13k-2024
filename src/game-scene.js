@@ -27,18 +27,18 @@ export default function gameScene() {
     parent.isBoss = true;
     parent.width = 16;
     parent.height = 16;
-    parent.shield = 20;
-    parent.maxShield = 20;
+    // parent.shield = 20;
+    // parent.maxShield = 20;
     children.forEach(child => {
-      for (let i = 0; i < child[2]; i++) {
-        const angle = i * (360 / child[2]);
+      for (let i = 0; i < child[3]; i++) {
+        const angle = i * (360 / child[3]);
         enemyPool.get({
           sprite: child[0],
           rotate: child[1],
           ttl: Infinity,
           imune: true,
           dying: false,
-          shield: ([5, 6].includes(parent.wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
+          shield: child[2] + Math.floor(virtualLevel / 4),
           frame: 0,
           isBoss: false,
           parent,
@@ -77,12 +77,18 @@ export default function gameScene() {
           dy: powerup.speed,
           image: imageAssets['font.png'],
           value: powerup.value,
-          ttl: 300,
+          ttl: Infinity,
           die() {
             ship.score += this.value;
             powerup.type === 0 && zzfx(...[1.6,,291,.01,.21,.35,,2.2,,,-136,.09,.03,,,.2,.2,.7,.28]); // Powerup 47
             powerup.type === 1 && zzfx(...[.5,,375,.03,.07,.08,1,2.7,,,302,.05,.05,,,,,.93,.01,,607]); // Pickup 61
             this.ttl = 0;
+          },
+          update() {
+            this._update();
+            if (this.y > 240) {
+              this.ttl = 0;
+            }
           },
           draw() {
             const { context: ctx } = this;
@@ -117,7 +123,8 @@ export default function gameScene() {
           ttl: Infinity,
           imune: true,
           dying: false,
-          shield: ([5, 6].includes(wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
+          shield: wave.shield + Math.floor(virtualLevel / 4),
+          maxShield: wave.shield + Math.floor(virtualLevel / 4),
           frame: 0,
           sprite: wave.sprite,
           parent: null,
@@ -142,7 +149,7 @@ export default function gameScene() {
 
       if (target.isAlive() && !source.imune && !target.imune && collides(target, source)) {
 
-        !target.name.includes('powerup-') && target.die();
+        !target.name.includes('powerup-') && !target.isBoss && target.die();
 
         if (source.name == 'ship' && target.name == 'enemy') {
           source.hit(50);
@@ -162,8 +169,8 @@ export default function gameScene() {
   }
 
   let
-    virtualLevel = 1,
-    currentLevel = 1;
+    virtualLevel = 2,
+    currentLevel = 2;
 
   const ship = createShip();
   const starField = starfield();
