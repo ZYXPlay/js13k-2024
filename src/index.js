@@ -26,6 +26,7 @@ function toggleExperience() {
 (async () => {
   await loadImage('font.png');
   await loadImage('spritesheet.png');
+  await loadImage('spritesheet16.png');
 
   onKey('e', toggleExperience);
 
