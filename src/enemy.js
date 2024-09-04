@@ -4,7 +4,7 @@ import { imageAssets } from "./lib/assets";
 import { emit } from "./lib/events";
 import { zzfx } from "./lib/zzfx";
 
-export default function createEnemy (props) {
+export default function createEnemy (props = {}) {
   const explosionColors = [null, null, null, 'purple', 'red', 'cyan', 'green', 'yellow', 'pink', 'orange'];
   return gameObject({
     name: 'enemy',
@@ -20,6 +20,11 @@ export default function createEnemy (props) {
     shield: 2,
     imune: true,
     dying: false,
+    parent: props.parent,
+    anglePlacement: props.anglePlacement || 0,
+    isBoss: false,
+    bossRadius: 30,
+    bossSpeed: 40,
     ...props,
     hit(damage) {
       this.shield -= damage;
@@ -28,7 +33,8 @@ export default function createEnemy (props) {
       zzfx(...[2.3,,330,,.06,.17,2,3.7,,,,,.05,.4,2,.5,.13,.89,.05,.17]); // Hit 56
     },
     die() {
-      this.wave.killed++;
+      this.wave && this.wave.killed++;
+      this.parent && this.parent.childrenKilled++;
       this.imune = true;
       this.dying = true;
       this.ttl = 10;
@@ -40,6 +46,11 @@ export default function createEnemy (props) {
       this.x = Math.floor(xy.x);
       this.y = Math.floor(xy.y);
 
+      if (this.parent) {
+        this.x = this.parent.x + Math.cos(this.frame / this.parent.bossSpeed + this.anglePlacement) * this.parent.bossRadius;
+        this.y = this.parent.y + Math.sin(this.frame / this.parent.bossSpeed + this.anglePlacement) * this.parent.bossRadius;
+      }
+
       this.hitTimer > 4 && (this.hitTimer = 0);
 
       this.rotate && (this.rotation = degToRad(90) + (angleToTarget(xy, nextXy)));
@@ -47,7 +58,7 @@ export default function createEnemy (props) {
 
       if (this.frame >= this.path.getTotalLength()) {
         this.frame = 0;
-        !this.loop && (this.wave.killed++, this.ttl = 0);
+        !this.loop && (this.wave && this.wave.killed++, this.ttl = 0);
       }
   
       let scale = clamp(0, 1, this.frame / 50);
@@ -73,7 +84,26 @@ export default function createEnemy (props) {
     draw() {
       const { context: ctx } = this;
       // @todo drawing only after frame 1 to avoid scale flickering
-      this.frame > 1 && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, 8, 8);
+      this.frame > 1 && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, this.isBoss ? 16 : 8, this.isBoss ? 16 : 8);
+
+      if (this.frame > 1 && this.isBoss) {
+        const bar = 20 * this.shield / this.maxShield;
+        ctx.save();
+        // ctx.scale(2-this.scaleX, 2-this.scaleY);
+        ctx.translate(this.width / 2, this.height / 2);
+        ctx.rotate(-this.rotation);
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(-12, -16 , 24, 6);
+        ctx.fillStyle = "black";
+        ctx.fillRect(-11, -15 , 22, 4);
+        ctx.fillStyle = "green";
+        if (this.shield < this.maxShield / 4) {
+          ctx.fillStyle = "red";
+        }
+        ctx.fillRect(-10, -14 , bar, 2);
+        ctx.restore();
+      }
 
       if (this.hitTimer) {
         ctx.globalCompositeOperation = "source-atop";

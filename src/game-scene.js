@@ -19,6 +19,38 @@ export default function gameScene() {
     emit('change-scene', 'menu');
   });
 
+  function processChildren(children, parent) {
+    if (children.length === 0) return;
+    parent.childrenKilled = 0;
+    parent.bossRadius = 30;
+    parent.bossSpeed = 100;
+    parent.isBoss = true;
+    parent.width = 16;
+    parent.height = 16;
+    parent.shield = 20;
+    parent.maxShield = 20;
+    children.forEach(child => {
+      for (let i = 0; i < child[2]; i++) {
+        const angle = i * (360 / child[2]);
+        enemyPool.get({
+          sprite: child[0],
+          rotate: child[1],
+          ttl: Infinity,
+          imune: true,
+          dying: false,
+          shield: ([5, 6].includes(parent.wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
+          frame: 0,
+          isBoss: false,
+          parent,
+          loop: parent.loop,
+          path: parent.path,
+          anglePlacement: degToRad(angle),
+          wave: parent.wave,
+        });
+      };
+    });
+  };
+
   function processDialogs(dialogs, frame) {
     dialogs.forEach(obj => {
       if (frame !== undefined && frame === obj.frame) {
@@ -76,7 +108,7 @@ export default function gameScene() {
       if (frame >= wave.frame && frame < totalFrames && wave.count < wave.total && waveFrame % wave.interval === 0) {
         wave.completed = false;
         wave.count += 1;
-        enemyPool.get({
+        const enemy = enemyPool.get({
           x: -100,
           y: -100,
           path: wave.path,
@@ -88,10 +120,12 @@ export default function gameScene() {
           shield: ([5, 6].includes(wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
           frame: 0,
           sprite: wave.sprite,
+          parent: null,
+          isBoss: false,
           wave,
         });
+        processChildren(wave.children || [], enemy);
       }
-
       processPowerups(wave.powerups, frame);
       doDialogs && processDialogs(wave.dialogs, frame);
 
@@ -331,6 +365,7 @@ export default function gameScene() {
     frame: 0,
     update() {
       if (dialog.isTalking) {
+        // starField.update();
         dialog.update();
         return;
       }
