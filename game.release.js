@@ -473,9 +473,9 @@
         this.hitTimer > 0 && this.hitTimer++;
         this.frame > 50 && this.fireTimer++;
 
-        if (this.fireTimer > 10 && this.fireTimer < 70) {
+        if (this.isBoss && this.fireTimer > 10 && this.fireTimer < 70) {
           this.imune = false;
-        } else {
+        } else if (this.isBoss) {
           this.imune = true;
         }
 
@@ -589,6 +589,118 @@
       [],
       [],
     ],
+  ];
+
+  var l02 = [ // waves
+    [ // wave
+      200, // start at frame
+      false, // wait for previous wave
+      0, // enemy type
+      false, // rotate
+      10, // shield
+      1, // total
+      50, // interval
+      true, // loop
+      2, // fire mode
+      'M131 57s-56 130 0 129c57 0 99-32 69-67s-33-85-69-75-71 38-71 75c1 37 25 52 64 51 39 0 61-22 60-51-1-30-21-46-47-47-25-1-56 17-56 47 0 29 12 32 43 29s39-11 39-29-6-25-26-25-32 4-36 25c-3 20 9 18 23 11 13-7 17-11 17-11', // path
+      // 'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
+      [ // dialogs
+        [ // dialog
+          99, // frame
+          0, // character
+          true, // pause gameplay
+          [ // texts
+            'SOMETHING BIG IS COMING',
+          ],
+        ],
+      ],
+      [ // powerups
+        [ // powerup
+          200, // frame
+          120, // x
+          .5, // speed
+          0, // type
+          10, // value
+        ],
+        [ // powerup
+          400, // frame
+          200, // x
+          .5, // speed
+          1, // type
+          10, // value
+        ],
+        [ // powerup
+          1600, // frame
+          200, // x
+          .5, // speed
+          0, // type
+          10, // value
+        ],
+        [ // powerup
+          2900, // frame
+          120, // x
+          .5, // speed
+          0, // type
+          10, // value
+        ],
+      ],
+      [ // children
+        [ // child
+          8, // enemy type
+          false, // rotate
+          1, // shield
+          4, // total
+          0, // fire mode
+        ],
+      ],
+    ],
+  ];
+
+  var l03 = [ // waves
+    [ // wave
+      100, // start at frame
+      false, // wait for previous wave
+      4, // enemy type
+      false, // rotate
+      1, // shield
+      2, // total
+      330, // interval
+      false, // loop
+      0, // mode
+      'M1 1s162 189 172 199c11 10 30 35 59 24 29-12 9-54 0-65L120 37S99 11 71 15c-27 3-46 47-46 47S4 106 4 126s-3 67 11 77c15 10 55 41 79 9L247 1', // path
+      [ // dialogs
+      ],
+      [ // powerups
+        [ // powerup
+          410, // frame
+          120, // x
+          1, // speed
+          0, // type
+          10, // value
+        ],
+        [ // powerup
+          730, // frame
+          200, // x
+          1, // speed
+          1, // type
+          10, // value
+        ],
+      ],
+    ],
+    [
+      400, // start at frame
+      true, // wait for previous wave
+      5, // enemy type
+      true, // rotate
+      2, // shield
+      3, // total
+      60, // interval
+      false, // loop
+      0, // mode
+      'M113.696 117.212C128.254 117.212 156.71 108.752 154.725 91.832C152.74 74.9117 136.196 52.5529 113.696 52.5529C91.1957 52.5529 64.7252 64.0345 54.7988 79.7461C44.8723 95.4577 38.9165 134.737 54.7988 152.261C70.6811 169.786 80.6075 172.807 105.755 172.203C130.902 171.599 155.387 160.117 170.607 149.24C185.828 138.363 203.034 112.378 202.372 91.832C201.71 71.286 207.004 45.9058 189.798 28.3813C172.593 10.8567 149.431 -0.625112 98.4751 1.18777C47.5194 3.00065 40.9017 23.5468 30.3135 38.0498C19.7253 52.5529 2.51948 78.5374 1.19596 112.378C-0.127568 146.219 5.16655 173.412 19.7253 189.728C34.2841 206.044 72.0046 225.381 98.4751 225.985C124.946 226.59 177.887 208.461 194.431 194.562C210.975 180.663 232.813 157.7 238.107 128.09C243.401 98.4791 244.725 70.6818 232.813 52.5529C220.901 34.424 207.666 18.7631 165.313 10.9072C122.96 3.05134 87.8869 18.1082 70.6811 31.4026C53.4752 44.697 19.7253 83.3718 19.7253 112.378C19.7253 141.384 25.6812 165.556 54.7988 186.102C83.9163 206.648 148.107 193.353 167.96 180.663C187.813 167.973 214.284 149.24 218.916 117.212C223.548 85.1847 199.725 59.2001 173.916 46.5099C148.107 33.8198 105.755 33.2155 83.9163 46.5099C62.0781 59.8043 40.24 93.0406 56.7841 128.09C73.3281 163.139 99.1369 163.139 115.681 156.492C132.225 149.844 167.96 141.384 173.916 112.378C179.872 83.3718 177.887 66.4517 142.151 59.2001C106.416 51.9485 79.284 62.2217 79.284 93.6449C79.284 125.068 98.4751 117.212 98.4751 117.212', // path
+      [],
+      [],
+    ],
 
     [
       600, // start at frame
@@ -621,13 +733,13 @@
     ],
   ];
 
-  var l02 = [ // waves
+  var l04 = [ // waves
     [ // wave
       200, // start at frame
       false, // wait for previous wave
       0, // enemy type
       false, // rotate
-      30, // shield
+      20, // shield
       1, // total
       50, // interval
       true, // loop
@@ -636,11 +748,13 @@
       // 'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
       [ // dialogs
         [ // dialog
-          99, // frame
+          50, // frame
           0, // character
           true, // pause gameplay
           [ // texts
-            'SOMETHING BIG IS COMING',
+            'REMEMBER',
+            'THE BIG SHIP CAN ONLY BE HIT',
+            'WHEN SHOOTING',
           ],
         ],
       ],
@@ -655,8 +769,22 @@
         [ // powerup
           400, // frame
           200, // x
-          1, // speed
+          .5, // speed
           1, // type
+          10, // value
+        ],
+        [ // powerup
+          1600, // frame
+          200, // x
+          .5, // speed
+          0, // type
+          10, // value
+        ],
+        [ // powerup
+          2900, // frame
+          120, // x
+          .5, // speed
+          0, // type
           10, // value
         ],
       ],
@@ -672,18 +800,13 @@
     ],
   ];
 
+  const levels = [l01, l02, l03, l04];
+
   function getLevel(level, virtualLevel) {
-    switch (level) {
-      case 1:
-        return parseLevel(l01, virtualLevel);
-      case 2:
-        return parseLevel(l02, virtualLevel);
-      default:
-        return parseLevel(l01, virtualLevel);
-    }
+    return parseLevel(levels[level - 1], virtualLevel);
   }
 
-  const totalLevels = 2;
+  const totalLevels = levels.length;
 
   function parseDialog(dialog) {
     const [frame, character, pause, texts] = dialog;
