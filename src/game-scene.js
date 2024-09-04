@@ -170,8 +170,8 @@ export default function gameScene() {
   }
 
   let
-    virtualLevel = 2,
-    currentLevel = 2;
+    virtualLevel = 1,
+    currentLevel = 1;
 
   const ship = createShip();
   const starField = starfield();
