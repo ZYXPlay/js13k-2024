@@ -5,7 +5,7 @@ import { emit } from "./lib/events";
 import { zzfx } from "./lib/zzfx";
 
 export default function createEnemy (props = {}) {
-  const explosionColors = [null, null, null, 'purple', 'red', 'cyan', 'green', 'yellow', 'pink', 'orange'];
+  const explosionColors = ['pink', 'orange', 'white', 'purple', 'red', 'cyan', 'green', 'yellow', 'pink', 'orange'];
   return gameObject({
     name: 'enemy',
     x: -80,
