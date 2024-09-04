@@ -1,14 +1,15 @@
 import { imageAssets } from "./lib/assets";
 import gameObject from "./lib/game-object";
+import { offKey, onKey } from "./lib/keyboard";
 import text from "./lib/text";
 import { zzfx } from "./lib/zzfx";
 
 export default function createDialog ({x = 8, y = 8}) {
-  const synth = window.speechSynthesis;
-  const voice = synth.getVoices().filter(voice => voice.name === 'Grandpa (English (UK))')[0];
-  // Grandpa (English (UK))
-  // Fred (en-US)
-  let utterThis;
+  // const synth = window.speechSynthesis;
+  // const voice = synth.getVoices().filter(voice => voice.name === 'Grandpa (English (UK))')[0];
+  // // Grandpa (English (UK))
+  // // Fred (en-US)
+  // let utterThis;
 
   return gameObject({
     name: 'dialog',
@@ -26,7 +27,11 @@ export default function createDialog ({x = 8, y = 8}) {
     talking: false,
     isTalking: false,
     stopping: false,
+    skip() {
+      this.textIndex = this.texts[this.textsIndex].length;
+    },
     start(dialog) {
+      onKey(['space'], () => this.skip());
       this.stopping = false;
       setTimeout(() => {
         this.isTalking = true;
@@ -36,6 +41,7 @@ export default function createDialog ({x = 8, y = 8}) {
       this.dy = -2;
     },
     stop() {
+      offKey(['space']);
       this.stopping = true;
       this.text.text = '        ';
       this.isTalking = false;
@@ -62,15 +68,15 @@ export default function createDialog ({x = 8, y = 8}) {
         this.frame = 0;
         this.textIndex = 0;
 
-        if (this.textsIndex < this.texts.length) {
-          let utterThis = new SpeechSynthesisUtterance(this.texts[this.textsIndex]);
-          utterThis.lang = 'en-US';
-          utterThis.pitch = 1.2;
-          utterThis.rate = 0.8;
-          utterThis.volume = 1;
-          utterThis.voice = voice;
-          synth.speak(utterThis);
-        }
+        // if (this.textsIndex < this.texts.length) {
+        //   let utterThis = new SpeechSynthesisUtterance(this.texts[this.textsIndex]);
+        //   utterThis.lang = 'en-US';
+        //   utterThis.pitch = 1.2;
+        //   utterThis.rate = 0.8;
+        //   utterThis.volume = 1;
+        //   utterThis.voice = voice;
+        //   synth.speak(utterThis);
+        // }
 
       };
       this.textsIndex >= this.texts.length && (!this.stopping && this.stop());
