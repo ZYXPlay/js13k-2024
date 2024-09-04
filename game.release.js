@@ -415,6 +415,7 @@
       isBoss: false,
       bossRadius: 30,
       bossSpeed: 40,
+      fireMode: 0,
       ...props,
       hit(damage) {
         this.shield -= damage;
@@ -462,12 +463,24 @@
 
         this.scaleX = this.scaleY = scale;
 
-        Math.random() > 0.995 && emit('enemy-fire', this, this.rotate ? 1 : 0);
+        this.fireMode !== 2 && Math.random() > 0.995 && emit('enemy-fire', this, this.fireMode);
+
+        if (this.fireMode === 2 && (this.fireTimer == 20 || this.fireTimer == 40 || this.fireTimer == 60)) {
+          emit('enemy-fire', this, this.fireMode);
+        }
+        this.fireTimer > 300 && (this.fireTimer = 0);
 
         this.hitTimer > 0 && this.hitTimer++;
-        this.fireTimer++;
+        this.frame > 50 && this.fireTimer++;
 
-        this._update();
+        if (this.fireTimer > 10 && this.fireTimer < 70) {
+          this.imune = true;
+        } else {
+          this.imune = false;
+        }
+
+        this.fireMode === 2 && (this.fireTimer < 10 || this.fireTimer > 70) && this._update();
+        this.fireMode !== 2 && this._update();
 
         this.ttl <= 0 && this.dying && (emit('explosion', this.x, this.y, this.isBoss ? 60 : 20, this.isBoss ? 10 : 5, explosionColors[this.sprite]));
       },
@@ -475,7 +488,7 @@
         const { context: ctx } = this;
         // @todo drawing only after frame 1 to avoid scale flickering
         this.frame > 1 && !this.isBoss && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, 8, 8);
-        this.frame > 1 && this.isBoss && ctx.drawImage(this.image16, 0, 0, 16, 16, 0, 0, 16, 16);
+        this.frame > 1 && this.isBoss && ctx.drawImage(this.image16, 16 * this.sprite, 0, 16, 16, 0, 0, 16, 16);
 
         if (this.frame > 1 && this.isBoss) {
           const bar = 20 * this.shield / this.maxShield;
@@ -618,7 +631,7 @@
       1, // total
       50, // interval
       true, // loop
-      0, // mode
+      2, // fire mode
       'M131 57s-56 130 0 129c57 0 99-32 69-67s-33-85-69-75-71 38-71 75c1 37 25 52 64 51 39 0 61-22 60-51-1-30-21-46-47-47-25-1-56 17-56 47 0 29 12 32 43 29s39-11 39-29-6-25-26-25-32 4-36 25c-3 20 9 18 23 11 13-7 17-11 17-11', // path
       // 'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
       [ // dialogs
@@ -652,7 +665,8 @@
           8, // enemy type
           true, // rotate
           2, // shield
-          16, // total
+          8, // total
+          1, // fire mode
         ],
       ],
     ],
@@ -696,7 +710,7 @@
     const waves = [];
 
     level.forEach((wave) => {
-      const [frame, previous, sprite, rotate, shield, total, interval, loop, mode, path, dialogs, powerups, children = []] = wave;
+      const [frame, previous, sprite, rotate, shield, total, interval, loop, fireMode, path, dialogs, powerups, children = []] = wave;
       waves.push({
         frame,
         previous,
@@ -706,7 +720,7 @@
         total: children.length > 0 ? total : total + Math.floor(virtualLevel / 4),
         interval,
         loop,
-        mode,
+        fireMode,
         path: createPath(path),
         dialogs: dialogs.map(parseDialog),
         powerups: powerups.map(parsePowerup),
@@ -1402,7 +1416,7 @@
           this.isTalking = true;
           this.texts = ['', ...dialog.texts];
           this.frame = 0;
-        }, 1000);
+        }, 2000);
         this.dy = -2;
       },
       stop() {
@@ -1419,14 +1433,14 @@
         this.dy = 2;
       },
       update() {
-        this.y < 224 && (this.dy = 0, this.y = 224);
+        this.y < 200 && (this.dy = 0, this.y = 200);
         this.y > 248 && (this.dy = 0, this.y = 248);
         if (this.texts.length == 0) return;
         this.talking = false;
         let t = this.texts[this.textsIndex] + '      ';
         t[this.textIndex] !== ' ' && (this.talking = true);
         this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfx(...[1.5,,261,.01,.02,.08,1,1.5,-0.5,,,-0.5,,,,,.9,.05]));
-        this.text.text = t.slice(0, this.textIndex);
+        this.textsIndex < this.texts.length && (this.text.text = t.slice(0, this.textIndex));
         this.frame++;
         if (this.textIndex >= t.length) {      
           this.textsIndex++;
@@ -1455,6 +1469,40 @@
         ctx.drawImage(image, this.sprites[this.spriteIndex] * 8, 0, 8, 8, 0, 0, 8, 8);
         ctx.translate(16, 0);
         this.text.draw();
+      },
+    });
+  }
+
+  function createEnemyBullet (props = {}) {
+    return gameObject({
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      width: 2,
+      height: 2,
+      ttl: 400,
+      frame: 0,
+      die() {
+        this.ttl = 0;
+        this.x = -100;
+        this.y = -100;
+      },
+      update() {
+        this._update();
+        if (
+          this.y > 240 ||
+          this.y < 0 ||
+          this.x > 256 ||
+          this.x < 0
+        ) {
+          this.ttl = 0;
+        }
+      },
+      draw() {
+        const { context: ctx } = this;
+        ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, this.width, this.width);
       },
     });
   }
@@ -1490,6 +1538,7 @@
             loop: parent.loop,
             path: parent.path,
             anglePlacement: degToRad(angle),
+            fireMode: child[4],
             wave: parent.wave,
           });
         }    });
@@ -1571,6 +1620,8 @@
             sprite: wave.sprite,
             parent: null,
             isBoss: false,
+            fireMode: wave.fireMode,
+            fireTimer: 0,
             wave,
           });
           processChildren(wave.children || [], enemy);
@@ -1611,8 +1662,8 @@
     }
 
     let
-      virtualLevel = 1,
-      currentLevel = 1;
+      virtualLevel = 2,
+      currentLevel = 2;
 
     const ship = createShip();
     const starField = starfield();
@@ -1624,7 +1675,7 @@
     });
 
     const enemyBulletPool = pool({
-      create: gameObject,
+      create: createEnemyBullet, // gameObject,
       maxSize: 100,
     });
 
@@ -1722,26 +1773,31 @@
       const vx = ship.x - 4 - x;
       const vy = ship.y - y;
       const dist = Math.hypot(vx, vy) / 1;
-      enemyBulletPool.get({
-        name: 'enemy-bullet',
-        x: x + 4,
-        y,
-        dx: mode == 0 ? 0 : vx / dist,
-        dy: mode == 0 ? 1.5 : vy / dist,
-        width: 2,
-        height: 2,
-        ttl: 400,
-        die() {
-          this.ttl = 0;
-          this.x = -100;
-          this.y = -100;
-        },
-        draw() {
-          const { context: ctx } = this;
-          ctx.fillStyle = 'red';
-          ctx.fillRect(0, 0, this.width, this.width);
-        },
-      });
+      if (mode === 2) {
+        for (let i = 0; i < 12; i++) {
+          const dx = Math.cos(degToRad(30 * i)) * 1;
+          const dy = Math.sin(degToRad(30 * i)) * 1;
+          enemyBulletPool.get({
+            name: 'enemy-bullet',
+            x: x,
+            y: y,
+            dx,
+            dy,
+            frame: 0,
+            ttl: 400,
+          });
+        }
+      } else {
+        enemyBulletPool.get({
+          name: 'enemy-bullet',
+          x: x + 4,
+          y: y + 4,
+          dx: mode == 0 ? 0 : vx / dist,
+          dy: mode == 0 ? 1.5 : vy / dist,
+          frame: 0,
+          ttl: 400,
+        });
+      }
       zzfx(...[.3,,222,.02,.04,.09,3,.3,11,10,,,,,15,,,.53,.17]); // Shoot 141
     });
 
