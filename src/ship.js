@@ -74,8 +74,8 @@ export default function createShip() {
 
       this.sprite = 1;
 
-      keyPressed('arrowright') && this.dx < 5 && (this.ddx = .2, this.sprite = 2);
-      keyPressed('arrowleft') && this.dx > -5 && (this.ddx = -.2, this.sprite = 0);
+      keyPressed(['d', 'arrowright']) && this.dx < 5 && (this.ddx = .2, this.sprite = 2);
+      keyPressed(['a', 'arrowleft']) && this.dx > -5 && (this.ddx = -.2, this.sprite = 0);
 
       if (keyPressed('space') && this.fireTimer % (15 / (this.fireLevel > 1 ? 2 : 1)) === 0) {
         if (this.fireLevel == 0) {
@@ -96,8 +96,8 @@ export default function createShip() {
       }
 
       if (!this.spawning) {
-        keyPressed('arrowdown') && this.dy < 5 && (this.ddy = .2);
-        keyPressed('arrowup') && this.dy > -5 && (this.ddy = -.2);
+        keyPressed(['s', 'arrowdown']) && this.dy < 5 && (this.ddy = .2);
+        keyPressed(['w', 'arrowup']) && this.dy > -5 && (this.ddy = -.2);
       }
 
       this.frame < 100 && (this.ddy = -.03, this.scaleX = this.scaleY = 2 - this.frame / 100);
