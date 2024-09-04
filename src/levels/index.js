@@ -1,19 +1,16 @@
 import { createPath } from '../lib/utils';
 import l01 from './01';
 import l02 from './02';
+import l03 from './03';
+import l04 from './04';
+
+const levels = [l01, l02, l03, l04];
 
 export function getLevel(level, virtualLevel) {
-  switch (level) {
-    case 1:
-      return parseLevel(l01, virtualLevel);
-    case 2:
-      return parseLevel(l02, virtualLevel);
-    default:
-      return parseLevel(l01, virtualLevel);
-  }
+  return parseLevel(levels[level - 1], virtualLevel);
 }
 
-export const totalLevels = 2;
+export const totalLevels = levels.length;
 
 function parseDialog(dialog) {
   const [frame, character, pause, texts] = dialog;

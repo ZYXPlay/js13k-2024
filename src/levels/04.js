@@ -4,7 +4,7 @@ export default [ // waves
     false, // wait for previous wave
     0, // enemy type
     false, // rotate
-    10, // shield
+    20, // shield
     1, // total
     50, // interval
     true, // loop
@@ -13,11 +13,13 @@ export default [ // waves
     // 'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
     [ // dialogs
       [ // dialog
-        99, // frame
+        50, // frame
         0, // character
         true, // pause gameplay
         [ // texts
-          'SOMETHING BIG IS COMING',
+          'REMEMBER',
+          'THE BIG SHIP CAN ONLY BE HIT',
+          'WHEN SHOOTING',
         ],
       ],
     ],
@@ -54,10 +56,10 @@ export default [ // waves
     [ // children
       [ // child
         8, // enemy type
-        false, // rotate
-        1, // shield
-        4, // total
-        0, // fire mode
+        true, // rotate
+        2, // shield
+        8, // total
+        1, // fire mode
       ],
     ],
   ],
