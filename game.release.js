@@ -399,6 +399,7 @@
       x: -80,
       y: -80,
       image: imageAssets['spritesheet.png'],
+      image16: imageAssets['spritesheet16.png'],
       sprite: 4,
       fireTimer: 0,
       hitTimer: 0,
@@ -406,6 +407,7 @@
       scaleX: 0.1,
       scaleY: 0.1,
       shield: 2,
+      maxShield: 2,
       imune: true,
       dying: false,
       parent: props.parent,
@@ -467,12 +469,13 @@
 
         this._update();
 
-        this.ttl <= 0 && this.dying && (emit('explosion', this.x, this.y, 20, 5, explosionColors[this.sprite]));
+        this.ttl <= 0 && this.dying && (emit('explosion', this.x, this.y, this.isBoss ? 60 : 20, this.isBoss ? 10 : 5, explosionColors[this.sprite]));
       },
       draw() {
         const { context: ctx } = this;
         // @todo drawing only after frame 1 to avoid scale flickering
-        this.frame > 1 && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, this.isBoss ? 16 : 8, this.isBoss ? 16 : 8);
+        this.frame > 1 && !this.isBoss && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, 8, 8);
+        this.frame > 1 && this.isBoss && ctx.drawImage(this.image16, 0, 0, 16, 16, 0, 0, 16, 16);
 
         if (this.frame > 1 && this.isBoss) {
           const bar = 20 * this.shield / this.maxShield;
@@ -496,7 +499,7 @@
         if (this.hitTimer) {
           ctx.globalCompositeOperation = "source-atop";
           ctx.fillStyle = "white";
-          ctx.fillRect(0, 0, 8, 8);
+          ctx.fillRect(0, 0, this.isBoss ? 16 : 8, this.isBoss ? 16 : 8);
           ctx.globalCompositeOperation = "source-over";
         }
       }
@@ -509,6 +512,7 @@
       false, // wait for previous wave
       4, // enemy type
       false, // rotate
+      1, // shield
       2, // total
       330, // interval
       false, // loop
@@ -563,6 +567,7 @@
       true, // wait for previous wave
       5, // enemy type
       true, // rotate
+      2, // shield
       3, // total
       60, // interval
       false, // loop
@@ -577,6 +582,7 @@
       true, // wait for previous wave
       6, // enemy type
       true, // rotate
+      4, // shield
       3, // total
       200, // interval
       false, // loop
@@ -591,6 +597,7 @@
       true, // wait for previous wave
       7, // enemy type
       false, // rotate
+      4, // shield
       3, // total
       20, // interval
       false, // loop
@@ -605,8 +612,9 @@
     [ // wave
       200, // start at frame
       false, // wait for previous wave
-      9, // enemy type
-      true, // rotate
+      0, // enemy type
+      false, // rotate
+      30, // shield
       1, // total
       50, // interval
       true, // loop
@@ -643,6 +651,7 @@
         [ // child
           8, // enemy type
           true, // rotate
+          2, // shield
           16, // total
         ],
       ],
@@ -687,12 +696,13 @@
     const waves = [];
 
     level.forEach((wave) => {
-      const [frame, previous, sprite, rotate, total, interval, loop, mode, path, dialogs, powerups, children = []] = wave;
+      const [frame, previous, sprite, rotate, shield, total, interval, loop, mode, path, dialogs, powerups, children = []] = wave;
       waves.push({
         frame,
         previous,
         sprite,
         rotate,
+        shield,
         total: children.length > 0 ? total : total + Math.floor(virtualLevel / 4),
         interval,
         loop,
@@ -1360,8 +1370,11 @@
   }
 
   function createDialog ({x = 8, y = 8}) {
-    const synth = window.speechSynthesis;
-    const voice = synth.getVoices().filter(voice => voice.name === 'Grandpa (English (UK))')[0];
+    // const synth = window.speechSynthesis;
+    // const voice = synth.getVoices().filter(voice => voice.name === 'Grandpa (English (UK))')[0];
+    // // Grandpa (English (UK))
+    // // Fred (en-US)
+    // let utterThis;
 
     return gameObject({
       name: 'dialog',
@@ -1379,7 +1392,11 @@
       talking: false,
       isTalking: false,
       stopping: false,
+      skip() {
+        this.textIndex = this.texts[this.textsIndex].length;
+      },
       start(dialog) {
+        onKey(['space'], () => this.skip());
         this.stopping = false;
         setTimeout(() => {
           this.isTalking = true;
@@ -1389,6 +1406,7 @@
         this.dy = -2;
       },
       stop() {
+        offKey(['space']);
         this.stopping = true;
         this.text.text = '        ';
         this.isTalking = false;
@@ -1415,15 +1433,15 @@
           this.frame = 0;
           this.textIndex = 0;
 
-          if (this.textsIndex < this.texts.length) {
-            let utterThis = new SpeechSynthesisUtterance(this.texts[this.textsIndex]);
-            utterThis.lang = 'en-US';
-            utterThis.pitch = 1.2;
-            utterThis.rate = 0.8;
-            utterThis.volume = 1;
-            utterThis.voice = voice;
-            synth.speak(utterThis);
-          }
+          // if (this.textsIndex < this.texts.length) {
+          //   let utterThis = new SpeechSynthesisUtterance(this.texts[this.textsIndex]);
+          //   utterThis.lang = 'en-US';
+          //   utterThis.pitch = 1.2;
+          //   utterThis.rate = 0.8;
+          //   utterThis.volume = 1;
+          //   utterThis.voice = voice;
+          //   synth.speak(utterThis);
+          // }
 
         }      this.textsIndex >= this.texts.length && (!this.stopping && this.stop());
         this.talking && (this.frame % 5 == 0 && this.spriteIndex++);
@@ -1454,18 +1472,18 @@
       parent.isBoss = true;
       parent.width = 16;
       parent.height = 16;
-      parent.shield = 20;
-      parent.maxShield = 20;
+      // parent.shield = 20;
+      // parent.maxShield = 20;
       children.forEach(child => {
-        for (let i = 0; i < child[2]; i++) {
-          const angle = i * (360 / child[2]);
+        for (let i = 0; i < child[3]; i++) {
+          const angle = i * (360 / child[3]);
           enemyPool.get({
             sprite: child[0],
             rotate: child[1],
             ttl: Infinity,
             imune: true,
             dying: false,
-            shield: ([5, 6].includes(parent.wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
+            shield: child[2] + Math.floor(virtualLevel / 4),
             frame: 0,
             isBoss: false,
             parent,
@@ -1501,12 +1519,18 @@
             dy: powerup.speed,
             image: imageAssets['font.png'],
             value: powerup.value,
-            ttl: 300,
+            ttl: Infinity,
             die() {
               ship.score += this.value;
               powerup.type === 0 && zzfx(...[1.6,,291,.01,.21,.35,,2.2,,,-136,.09,.03,,,.2,.2,.7,.28]); // Powerup 47
               powerup.type === 1 && zzfx(...[.5,,375,.03,.07,.08,1,2.7,,,302,.05,.05,,,,,.93,.01,,607]); // Pickup 61
               this.ttl = 0;
+            },
+            update() {
+              this._update();
+              if (this.y > 240) {
+                this.ttl = 0;
+              }
             },
             draw() {
               const { context: ctx } = this;
@@ -1540,7 +1564,8 @@
             ttl: Infinity,
             imune: true,
             dying: false,
-            shield: ([5, 6].includes(wave.sprite) ? 4 : 2) * Math.floor(virtualLevel / 4),
+            shield: wave.shield + Math.floor(virtualLevel / 4),
+            maxShield: wave.shield + Math.floor(virtualLevel / 4),
             frame: 0,
             sprite: wave.sprite,
             parent: null,
@@ -1565,7 +1590,7 @@
 
         if (target.isAlive() && !source.imune && !target.imune && collides(target, source)) {
 
-          !target.name.includes('powerup-') && target.die();
+          !target.name.includes('powerup-') && !target.isBoss && target.die();
 
           if (source.name == 'ship' && target.name == 'enemy') {
             source.hit(50);
@@ -1585,8 +1610,8 @@
     }
 
     let
-      virtualLevel = 1,
-      currentLevel = 1;
+      virtualLevel = 2,
+      currentLevel = 2;
 
     const ship = createShip();
     const starField = starfield();
@@ -1962,6 +1987,7 @@
   (async () => {
     await loadImage('font.png');
     await loadImage('spritesheet.png');
+    await loadImage('spritesheet16.png');
 
     onKey('e', toggleExperience);
 
