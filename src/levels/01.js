@@ -1,6 +1,23 @@
 export default [ // waves
-  [ // wave
+  [
     100, // start at frame
+    false, // wait for previous wave
+    20, // enemy type
+    false, // rotate
+    10, // shield
+    10, // total
+    130, // interval
+    false, // loop
+    0, // mode
+    '', // path
+    [], // dialogs
+    [], // powerups
+    [], // children
+    [40, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
+    [1, -1, 0, -1, 1, -1, 0, 1, 0, 1], // dx speeds
+  ],
+  [ // wave
+    1300, // start at frame
     false, // wait for previous wave
     4, // enemy type
     false, // rotate
@@ -11,31 +28,31 @@ export default [ // waves
     0, // mode
     'M1 1s162 189 172 199c11 10 30 35 59 24 29-12 9-54 0-65L120 37S99 11 71 15c-27 3-46 47-46 47S4 106 4 126s-3 67 11 77c15 10 55 41 79 9L247 1', // path
     [ // dialogs
-      [ // dialog
-        99, // frame
-        0, // character
-        true, // pause gameplay
-        [ // texts
-          'CAPTAIN',
-          'WE HAVE DETECTED',
-          'SOME ENEMY SCOUTS',
-          'A FULL WAVE IS IMINENT',
-          '    ',
-          'PROCEED WITH CAUTION',
-          'AND GOOD LUCK!'
-        ],
-      ],
-      [ // dialog
-        420, // frame
-        0, // character
-        true, // pause gameplay
-        [ // texts
-          'WE DEPLOYED SOME POWERUPS',
-          '',
-          'TO ENHANCE YOUR FIRE POWER',
-          'AND RECHARGE YOUR SHIELD',
-        ],
-      ],
+      // [ // dialog
+      //   99, // frame
+      //   0, // character
+      //   true, // pause gameplay
+      //   [ // texts
+      //     'CAPTAIN',
+      //     'WE HAVE DETECTED',
+      //     'SOME ENEMY SCOUTS',
+      //     'A FULL WAVE IS IMINENT',
+      //     '    ',
+      //     'PROCEED WITH CAUTION',
+      //     'AND GOOD LUCK!'
+      //   ],
+      // ],
+      // [ // dialog
+      //   420, // frame
+      //   0, // character
+      //   true, // pause gameplay
+      //   [ // texts
+      //     'WE DEPLOYED SOME POWERUPS',
+      //     '',
+      //     'TO ENHANCE YOUR FIRE POWER',
+      //     'AND RECHARGE YOUR SHIELD',
+      //   ],
+      // ],
     ],
     [ // powerups
       [ // powerup
@@ -55,7 +72,7 @@ export default [ // waves
     ],
   ],
   [
-    400, // start at frame
+    1500, // start at frame
     true, // wait for previous wave
     5, // enemy type
     true, // rotate
@@ -64,8 +81,18 @@ export default [ // waves
     60, // interval
     false, // loop
     0, // mode
-    'M113.696 117.212C128.254 117.212 156.71 108.752 154.725 91.832C152.74 74.9117 136.196 52.5529 113.696 52.5529C91.1957 52.5529 64.7252 64.0345 54.7988 79.7461C44.8723 95.4577 38.9165 134.737 54.7988 152.261C70.6811 169.786 80.6075 172.807 105.755 172.203C130.902 171.599 155.387 160.117 170.607 149.24C185.828 138.363 203.034 112.378 202.372 91.832C201.71 71.286 207.004 45.9058 189.798 28.3813C172.593 10.8567 149.431 -0.625112 98.4751 1.18777C47.5194 3.00065 40.9017 23.5468 30.3135 38.0498C19.7253 52.5529 2.51948 78.5374 1.19596 112.378C-0.127568 146.219 5.16655 173.412 19.7253 189.728C34.2841 206.044 72.0046 225.381 98.4751 225.985C124.946 226.59 177.887 208.461 194.431 194.562C210.975 180.663 232.813 157.7 238.107 128.09C243.401 98.4791 244.725 70.6818 232.813 52.5529C220.901 34.424 207.666 18.7631 165.313 10.9072C122.96 3.05134 87.8869 18.1082 70.6811 31.4026C53.4752 44.697 19.7253 83.3718 19.7253 112.378C19.7253 141.384 25.6812 165.556 54.7988 186.102C83.9163 206.648 148.107 193.353 167.96 180.663C187.813 167.973 214.284 149.24 218.916 117.212C223.548 85.1847 199.725 59.2001 173.916 46.5099C148.107 33.8198 105.755 33.2155 83.9163 46.5099C62.0781 59.8043 40.24 93.0406 56.7841 128.09C73.3281 163.139 99.1369 163.139 115.681 156.492C132.225 149.844 167.96 141.384 173.916 112.378C179.872 83.3718 177.887 66.4517 142.151 59.2001C106.416 51.9485 79.284 62.2217 79.284 93.6449C79.284 125.068 98.4751 117.212 98.4751 117.212', // path
+    'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27', // path
     [],
     [],
   ],
+];
+
+const newLevel = [
+  '', // title
+  1, // star field speed
+  [], // enemies
+  [], // asteroids
+  [], // boss
+  [], // dialogs
+  [], // powerups
 ];

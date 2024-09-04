@@ -14,6 +14,7 @@ import { onKey } from "./lib/keyboard";
 import { imageAssets } from "./lib/assets";
 import createDialog from "./dialog";
 import createEnemyBullet from "./enemy-bullet";
+import createAsteroid from "./asteroid";
 
 export default function gameScene() {
   onKey(['esc'], () => {
@@ -28,8 +29,6 @@ export default function gameScene() {
     parent.isBoss = true;
     parent.width = 16;
     parent.height = 16;
-    // parent.shield = 20;
-    // parent.maxShield = 20;
     children.forEach(child => {
       for (let i = 0; i < child[3]; i++) {
         const angle = i * (360 / child[3]);
@@ -82,8 +81,8 @@ export default function gameScene() {
           ttl: Infinity,
           die() {
             ship.score += this.value;
-            powerup.type === 0 && zzfx(...[1.6,,291,.01,.21,.35,,2.2,,,-136,.09,.03,,,.2,.2,.7,.28]); // Powerup 47
-            powerup.type === 1 && zzfx(...[.5,,375,.03,.07,.08,1,2.7,,,302,.05,.05,,,,,.93,.01,,607]); // Pickup 61
+            powerup.type === 0 && zzfx(...[1.6, , 291, .01, .21, .35, , 2.2, , , -136, .09, .03, , , .2, .2, .7, .28]); // Powerup 47
+            powerup.type === 1 && zzfx(...[.5, , 375, .03, .07, .08, 1, 2.7, , , 302, .05, .05, , , , , .93, .01, , 607]); // Pickup 61
             this.ttl = 0;
           },
           update() {
@@ -94,11 +93,11 @@ export default function gameScene() {
           },
           draw() {
             const { context: ctx } = this;
-            if(this.frame % 20 < 10) {
+            if (this.frame % 20 < 10) {
               ctx.fillStyle = this.color;
-              ctx.fillRect(-3, -3, this.width + 6, this.height + 6);  
+              ctx.fillRect(-3, -3, this.width + 6, this.height + 6);
               ctx.fillStyle = 'black';
-              ctx.fillRect(-2, -2, this.width + 4, this.height + 4);  
+              ctx.fillRect(-2, -2, this.width + 4, this.height + 4);
             }
             ctx.fillStyle = this.color;
             ctx.fillRect(-1, -1, this.width + 2, this.height + 2);
@@ -114,29 +113,43 @@ export default function gameScene() {
       const waveFrame = frame - wave.frame;
       const totalFrames = wave.frame + (wave.total * wave.interval);
       if (frame >= wave.frame && frame < totalFrames && wave.count < wave.total && waveFrame % wave.interval === 0) {
+        const shieldMultiplier = virtualLevel / currentLevel > 1 ? Math.floor((virtualLevel / currentLevel) * wave.shield * 0.2) : 0;
+
+        if (wave.sprite === 20) {
+          asteroidPool.get({
+            x: wave.xPositions[wave.count],
+            y: -8,
+            dx: wave.dxSpeeds[wave.count],
+            dy: 1,
+            sprite: 2,
+            ttl: Infinity,
+            shield: wave.shield + shieldMultiplier,
+            wave,
+          });
+        } else {
+          const enemy = enemyPool.get({
+            x: -100,
+            y: -100,
+            path: wave.path,
+            rotate: wave.rotate,
+            loop: wave.loop,
+            ttl: Infinity,
+            imune: true,
+            dying: false,
+            shield: wave.shield + shieldMultiplier,
+            maxShield: wave.shield + shieldMultiplier,
+            frame: 0,
+            sprite: wave.sprite,
+            parent: null,
+            isBoss: false,
+            fireMode: wave.fireMode,
+            fireTimer: 0,
+            wave,
+          });
+          processChildren(wave.children || [], enemy);
+        }
         wave.completed = false;
         wave.count += 1;
-        const shieldMultiplier = virtualLevel / currentLevel > 1 ? Math.floor((virtualLevel / currentLevel) * wave.shield * 0.2) : 0;
-        const enemy = enemyPool.get({
-          x: -100,
-          y: -100,
-          path: wave.path,
-          rotate: wave.rotate,
-          loop: wave.loop,
-          ttl: Infinity,
-          imune: true,
-          dying: false,
-          shield: wave.shield + shieldMultiplier,
-          maxShield: wave.shield + shieldMultiplier,
-          frame: 0,
-          sprite: wave.sprite,
-          parent: null,
-          isBoss: false,
-          fireMode: wave.fireMode,
-          fireTimer: 0,
-          wave,
-        });
-        processChildren(wave.children || [], enemy);
       }
       processPowerups(wave.powerups, frame);
       doDialogs && processDialogs(wave.dialogs, frame);
@@ -154,10 +167,18 @@ export default function gameScene() {
 
       if (target.isAlive() && !source.imune && !target.imune && collides(target, source)) {
 
-        !target.name.includes('powerup-') && !target.isBoss && target.die();
+        // !target.name.includes('powerup-') && !target.isBoss && target.die();
+        if (
+          !target.name.includes('powerup-')
+          && !target.isBoss
+          && source.name !== 'ship-bullet'
+        ) target.die();
 
         if (source.name == 'ship' && target.name == 'enemy') {
           source.hit(50);
+        } else if (source.name == 'ship' && target.name == 'asteroid') {
+          source.die();
+          target.die();
         } else if (source.name == 'ship' && target.name == 'powerup-fire') {
           source.firePowerup(target.value);
           target.die();
@@ -166,6 +187,9 @@ export default function gameScene() {
           target.die();
         } else if (source.name == 'ship') {
           source.hit(10);
+        } else if (source.name == 'ship-bullet' && target.name == 'asteroid') {
+          source.ttl = 0;
+          target.hit(1);
         }
 
         source.name == 'enemy' && (source.hit(1), ship.score += 10);
@@ -194,6 +218,11 @@ export default function gameScene() {
   const enemyPool = pool({
     create: createEnemy,
     maxSize: 100,
+  });
+
+  const asteroidPool = pool({
+    create: createAsteroid,
+    maxSize: 10,
   });
 
   const explosionPool = pool({
@@ -242,13 +271,13 @@ export default function gameScene() {
     anchor: { x: 0, y: 0 },
     draw() {
       const { context: ctx } = this;
-      const value = ship.shield >= 0 ? ship.shield / 5: 0; // ship.shield >= 0 ? 24 * ship.shield / 100 : 0;
+      const value = ship.shield >= 0 ? ship.shield / 5 : 0; // ship.shield >= 0 ? 24 * ship.shield / 100 : 0;
       ctx.strokeStyle = 'white';
       ctx.strokeRect(0, 0, this.width, this.height);
 
       ctx.fillStyle = 'green';
       ship.shield < 25 && (ctx.fillStyle = 'red');
-      ctx.fillRect(2, 2, value, this.height-4);
+      ctx.fillRect(2, 2, value, this.height - 4);
     }
   });
 
@@ -278,7 +307,7 @@ export default function gameScene() {
         ctx.fillRect(0, 2, this.width, 1);
       },
     });
-    zzfx(...[.9,,413,,.05,.01,1,3.8,-3,-13.4,,,,,,,.11,.65,.07,,237]); // Shoot 124
+    zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
   });
 
   on('enemy-fire', ({ x, y }, mode = 0) => {
@@ -310,7 +339,7 @@ export default function gameScene() {
         ttl: 400,
       });
     }
-    zzfx(...[.3,,222,.02,.04,.09,3,.3,11,10,,,,,15,,,.53,.17]); // Shoot 141
+    zzfx(...[.3, , 222, .02, .04, .09, 3, .3, 11, 10, , , , , 15, , , .53, .17]); // Shoot 141
   });
 
   on('explosion', (x, y, volume = 50, magnitude = 3, color = 'white') => {
@@ -318,7 +347,7 @@ export default function gameScene() {
       let angle = Math.random() * 360;
       let maxMagnitude = magnitude;
       let newMagnitude = Math.random() * maxMagnitude + maxMagnitude;
-    
+
       explosionPool.get({
         name: 'particle',
         x,
@@ -366,19 +395,20 @@ export default function gameScene() {
       });
 
     }
-    zzfx(...[,,45,.03,.21,.6,4,.9,2,-3,,,,.2,,.9,,.45,.26]); // Explosion 39
+    zzfx(...[, , 45, .03, .21, .6, 4, .9, 2, -3, , , , .2, , .9, , .45, .26]); // Explosion 39
   });
 
   on('game-over', () => {
-    setTimeout(() => emit('change-scene', 'game-over', {score: ship.score}), 2000);
+    setTimeout(() => emit('change-scene', 'game-over', { score: ship.score }), 2000);
   });
 
   const qtShip = new Quadtree();
   const qtEnemies = new Quadtree();
+  const qtBullets = new Quadtree();
 
   return scene({
-    objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, enemyPool, explosionPool, textScore, textLives, progressShield, dialog],
-    level: getLevel(currentLevel, 1) ,//levels[0],
+    objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, asteroidPool, enemyPool, explosionPool, textScore, textLives, progressShield, dialog],
+    level: getLevel(currentLevel, 1),//levels[0],
     frame: 0,
     update() {
       if (dialog.isTalking) {
@@ -390,13 +420,19 @@ export default function gameScene() {
       levelText.update();
 
       qtShip.clear();
-      qtShip.add(ship, enemyPool.getAliveObjects(), enemyBulletPool.getAliveObjects(),powerupPool.getAliveObjects());
+      qtShip.add(ship, asteroidPool.getAliveObjects(), enemyPool.getAliveObjects(), enemyBulletPool.getAliveObjects(), powerupPool.getAliveObjects());
       checkCollisions(ship, qtShip.get(ship));
 
       qtEnemies.clear();
       enemyPool.getAliveObjects().forEach(enemy => {
         qtEnemies.add(enemy, bulletPool.getAliveObjects());
         checkCollisions(enemy, qtEnemies.get(enemy));
+      });
+
+      qtBullets.clear();
+      bulletPool.getAliveObjects().forEach(bullet => {
+        qtBullets.add(bullet, asteroidPool.getAliveObjects());
+        checkCollisions(bullet, qtBullets.get(bullet));
       });
 
       const wavesLeft = this.level.waves.filter(wave => !wave.completed).length;
@@ -407,7 +443,7 @@ export default function gameScene() {
         this.level = getLevel(currentLevel, virtualLevel);
         this.frame = 0;
         levelText.text = `LEVEL ${virtualLevel}`;
-        zzfx(...[,,264,.07,.29,.06,1,3.7,,-30,-148,.07,.08,,,,,.76,.22,,-1240]); // Powerup 152
+        zzfx(...[, , 264, .07, .29, .06, 1, 3.7, , -30, -148, .07, .08, , , , , .76, .22, , -1240]); // Powerup 152
       }
 
       textScore.text = `SCORE ${ship.score}`;
