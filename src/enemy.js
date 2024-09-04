@@ -11,6 +11,7 @@ export default function createEnemy (props = {}) {
     x: -80,
     y: -80,
     image: imageAssets['spritesheet.png'],
+    image16: imageAssets['spritesheet16.png'],
     sprite: 4,
     fireTimer: 0,
     hitTimer: 0,
@@ -18,6 +19,7 @@ export default function createEnemy (props = {}) {
     scaleX: 0.1,
     scaleY: 0.1,
     shield: 2,
+    maxShield: 2,
     imune: true,
     dying: false,
     parent: props.parent,
@@ -79,12 +81,13 @@ export default function createEnemy (props = {}) {
 
       this._update();
 
-      this.ttl <= 0 && this.dying && (emit('explosion', this.x, this.y, 20, 5, explosionColors[this.sprite]));
+      this.ttl <= 0 && this.dying && (emit('explosion', this.x, this.y, this.isBoss ? 60 : 20, this.isBoss ? 10 : 5, explosionColors[this.sprite]));
     },
     draw() {
       const { context: ctx } = this;
       // @todo drawing only after frame 1 to avoid scale flickering
-      this.frame > 1 && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, this.isBoss ? 16 : 8, this.isBoss ? 16 : 8);
+      this.frame > 1 && !this.isBoss && ctx.drawImage(this.image, 8 * this.sprite, 0, 8, 8, 0, 0, 8, 8);
+      this.frame > 1 && this.isBoss && ctx.drawImage(this.image16, 0, 0, 16, 16, 0, 0, 16, 16);
 
       if (this.frame > 1 && this.isBoss) {
         const bar = 20 * this.shield / this.maxShield;
@@ -108,7 +111,7 @@ export default function createEnemy (props = {}) {
       if (this.hitTimer) {
         ctx.globalCompositeOperation = "source-atop";
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, 8, 8);
+        ctx.fillRect(0, 0, this.isBoss ? 16 : 8, this.isBoss ? 16 : 8);
         ctx.globalCompositeOperation = "source-over";
       }
     }

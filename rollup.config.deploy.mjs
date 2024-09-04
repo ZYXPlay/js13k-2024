@@ -17,6 +17,7 @@ export default [{
         { src: 'src/index.html', dest: 'build' },
         { src: 'assets/font.png', dest: 'build' },
         { src: 'assets/spritesheet.png', dest: 'build' },
+        { src: 'assets/spritesheet16.png', dest: 'build' },
       ],
     }),
     execute([
