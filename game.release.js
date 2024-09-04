@@ -520,8 +520,25 @@
   }
 
   var l01 = [ // waves
-    [ // wave
+    [
       100, // start at frame
+      false, // wait for previous wave
+      20, // enemy type
+      false, // rotate
+      10, // shield
+      10, // total
+      130, // interval
+      false, // loop
+      0, // mode
+      '', // path
+      [], // dialogs
+      [], // powerups
+      [], // children
+      [40, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
+      [1, -1, 0, -1, 1, -1, 0, 1, 0, 1], // dx speeds
+    ],
+    [ // wave
+      1300, // start at frame
       false, // wait for previous wave
       4, // enemy type
       false, // rotate
@@ -532,31 +549,31 @@
       0, // mode
       'M1 1s162 189 172 199c11 10 30 35 59 24 29-12 9-54 0-65L120 37S99 11 71 15c-27 3-46 47-46 47S4 106 4 126s-3 67 11 77c15 10 55 41 79 9L247 1', // path
       [ // dialogs
-        [ // dialog
-          99, // frame
-          0, // character
-          true, // pause gameplay
-          [ // texts
-            'CAPTAIN',
-            'WE HAVE DETECTED',
-            'SOME ENEMY SCOUTS',
-            'A FULL WAVE IS IMINENT',
-            '    ',
-            'PROCEED WITH CAUTION',
-            'AND GOOD LUCK!'
-          ],
-        ],
-        [ // dialog
-          420, // frame
-          0, // character
-          true, // pause gameplay
-          [ // texts
-            'WE DEPLOYED SOME POWERUPS',
-            '',
-            'TO ENHANCE YOUR FIRE POWER',
-            'AND RECHARGE YOUR SHIELD',
-          ],
-        ],
+        // [ // dialog
+        //   99, // frame
+        //   0, // character
+        //   true, // pause gameplay
+        //   [ // texts
+        //     'CAPTAIN',
+        //     'WE HAVE DETECTED',
+        //     'SOME ENEMY SCOUTS',
+        //     'A FULL WAVE IS IMINENT',
+        //     '    ',
+        //     'PROCEED WITH CAUTION',
+        //     'AND GOOD LUCK!'
+        //   ],
+        // ],
+        // [ // dialog
+        //   420, // frame
+        //   0, // character
+        //   true, // pause gameplay
+        //   [ // texts
+        //     'WE DEPLOYED SOME POWERUPS',
+        //     '',
+        //     'TO ENHANCE YOUR FIRE POWER',
+        //     'AND RECHARGE YOUR SHIELD',
+        //   ],
+        // ],
       ],
       [ // powerups
         [ // powerup
@@ -576,7 +593,7 @@
       ],
     ],
     [
-      400, // start at frame
+      1500, // start at frame
       true, // wait for previous wave
       5, // enemy type
       true, // rotate
@@ -585,15 +602,29 @@
       60, // interval
       false, // loop
       0, // mode
-      'M113.696 117.212C128.254 117.212 156.71 108.752 154.725 91.832C152.74 74.9117 136.196 52.5529 113.696 52.5529C91.1957 52.5529 64.7252 64.0345 54.7988 79.7461C44.8723 95.4577 38.9165 134.737 54.7988 152.261C70.6811 169.786 80.6075 172.807 105.755 172.203C130.902 171.599 155.387 160.117 170.607 149.24C185.828 138.363 203.034 112.378 202.372 91.832C201.71 71.286 207.004 45.9058 189.798 28.3813C172.593 10.8567 149.431 -0.625112 98.4751 1.18777C47.5194 3.00065 40.9017 23.5468 30.3135 38.0498C19.7253 52.5529 2.51948 78.5374 1.19596 112.378C-0.127568 146.219 5.16655 173.412 19.7253 189.728C34.2841 206.044 72.0046 225.381 98.4751 225.985C124.946 226.59 177.887 208.461 194.431 194.562C210.975 180.663 232.813 157.7 238.107 128.09C243.401 98.4791 244.725 70.6818 232.813 52.5529C220.901 34.424 207.666 18.7631 165.313 10.9072C122.96 3.05134 87.8869 18.1082 70.6811 31.4026C53.4752 44.697 19.7253 83.3718 19.7253 112.378C19.7253 141.384 25.6812 165.556 54.7988 186.102C83.9163 206.648 148.107 193.353 167.96 180.663C187.813 167.973 214.284 149.24 218.916 117.212C223.548 85.1847 199.725 59.2001 173.916 46.5099C148.107 33.8198 105.755 33.2155 83.9163 46.5099C62.0781 59.8043 40.24 93.0406 56.7841 128.09C73.3281 163.139 99.1369 163.139 115.681 156.492C132.225 149.844 167.96 141.384 173.916 112.378C179.872 83.3718 177.887 66.4517 142.151 59.2001C106.416 51.9485 79.284 62.2217 79.284 93.6449C79.284 125.068 98.4751 117.212 98.4751 117.212', // path
+      'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27', // path
       [],
       [],
     ],
   ];
 
   var l02 = [ // waves
+    [
+      100, // start at frame
+      true, // wait for previous wave
+      5, // enemy type
+      true, // rotate
+      2, // shield
+      3, // total
+      60, // interval
+      false, // loop
+      0, // mode
+      'M287 12.5L-21 60.5L272 106.5L-21 137.5L272 185.5L-18.5 237.5', // path
+      [],
+      [],
+    ],
     [ // wave
-      200, // start at frame
+      400, // start at frame
       false, // wait for previous wave
       0, // enemy type
       false, // rotate
@@ -649,8 +680,34 @@
           8, // enemy type
           false, // rotate
           1, // shield
-          4, // total
+          16, // total
           0, // fire mode
+        ],
+      ],
+    ],
+    [ // wave
+      1000, // start at frame
+      false, // wait for previous wave
+      0, // enemy type
+      false, // rotate
+      5, // shield
+      1, // total
+      50, // interval
+      true, // loop
+      2, // fire mode
+      // 'M131 57s-56 130 0 129c57 0 99-32 69-67s-33-85-69-75-71 38-71 75c1 37 25 52 64 51 39 0 61-22 60-51-1-30-21-46-47-47-25-1-56 17-56 47 0 29 12 32 43 29s39-11 39-29-6-25-26-25-32 4-36 25c-3 20 9 18 23 11 13-7 17-11 17-11', // path
+      'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
+      [ // dialogs
+      ],
+      [ // powerups
+      ],
+      [ // children
+        [ // child
+          5, // enemy type
+          false, // rotate
+          1, // shield
+          4, // total
+          1, // fire mode
         ],
       ],
     ],
@@ -833,7 +890,7 @@
     const waves = [];
 
     level.forEach((wave) => {
-      const [frame, previous, sprite, rotate, shield, total, interval, loop, fireMode, path, dialogs, powerups, children = []] = wave;
+      const [frame, previous, sprite, rotate, shield, total, interval, loop, fireMode, path = '', dialogs = [], powerups = [], children = [], xPositions = [], dxSpeeds=[]] = wave;
       waves.push({
         frame,
         previous,
@@ -844,13 +901,15 @@
         interval,
         loop,
         fireMode,
-        path: createPath(path),
+        path: sprite !== 20 && createPath(path),
         dialogs: dialogs.map(parseDialog),
         powerups: powerups.map(parsePowerup),
         count: 0,
         completed: false,
         killed: 0,
         children,
+        xPositions,
+        dxSpeeds,
       });
     });
 
@@ -1018,8 +1077,8 @@
 
         this.sprite = 1;
 
-        keyPressed('arrowright') && this.dx < 5 && (this.ddx = .2, this.sprite = 2);
-        keyPressed('arrowleft') && this.dx > -5 && (this.ddx = -.2, this.sprite = 0);
+        keyPressed(['d', 'arrowright']) && this.dx < 5 && (this.ddx = .2, this.sprite = 2);
+        keyPressed(['a', 'arrowleft']) && this.dx > -5 && (this.ddx = -.2, this.sprite = 0);
 
         if (keyPressed('space') && this.fireTimer % (15 / (this.fireLevel > 1 ? 2 : 1)) === 0) {
           if (this.fireLevel == 0) {
@@ -1040,8 +1099,8 @@
         }
 
         if (!this.spawning) {
-          keyPressed('arrowdown') && this.dy < 5 && (this.ddy = .2);
-          keyPressed('arrowup') && this.dy > -5 && (this.ddy = -.2);
+          keyPressed(['s', 'arrowdown']) && this.dy < 5 && (this.ddy = .2);
+          keyPressed(['w', 'arrowup']) && this.dy > -5 && (this.ddy = -.2);
         }
 
         this.frame < 100 && (this.ddy = -.03, this.scaleX = this.scaleY = 2 - this.frame / 100);
@@ -1630,6 +1689,58 @@
     });
   }
 
+  function createAsteroid () {
+    return gameObject({
+      name: 'asteroid',
+      x: 0,
+      y: -16,
+      image: imageAssets['spritesheet.png'],
+      image16: imageAssets['spritesheet16.png'],
+      sprite: 2,
+      frame: 0,
+      scaleX: 1,
+      scaleY: 1,
+      width: 16,
+      height: 16,
+      angle: 0,
+      speed: 1,
+      rotation: 0,
+      rotate: false,
+      ttl: 0,
+      frame: 0,
+      hitted: false,
+      shield: 20,
+      hit() {
+        this.hitted = true;
+        this.shield--;
+        setTimeout(() => {
+          this.hitted = false;
+        }, 200);
+      },
+      die() {
+        emit('explosion', this.x, this.y, 20, 10, 'white');
+        this.ttl = 0;
+        this.wave && this.wave.killed++;
+      },
+      update() {
+        this.rotation += 0.1;
+        this.shield <= 0 && this.die();
+        this._update();
+        (this.y > 260 || this.x < -16 || this.x > 266) && (this.ttl = 0, this.wave && this.wave.killed++);
+      },
+      draw() {
+        const { context: ctx } = this;
+        ctx.drawImage(this.image16, 16 * 2, 0, 16, 16, 0, 0, 16, 16);
+        if (this.hitted) {
+          ctx.globalCompositeOperation = "source-atop";
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, 16, 16);
+          ctx.globalCompositeOperation = "source-over";
+        }
+      }
+    });
+  }
+
   function gameScene() {
     onKey(['esc'], () => {
       emit('change-scene', 'menu');
@@ -1643,8 +1754,6 @@
       parent.isBoss = true;
       parent.width = 16;
       parent.height = 16;
-      // parent.shield = 20;
-      // parent.maxShield = 20;
       children.forEach(child => {
         for (let i = 0; i < child[3]; i++) {
           const angle = i * (360 / child[3]);
@@ -1694,8 +1803,8 @@
             ttl: Infinity,
             die() {
               ship.score += this.value;
-              powerup.type === 0 && zzfx(...[1.6,,291,.01,.21,.35,,2.2,,,-136,.09,.03,,,.2,.2,.7,.28]); // Powerup 47
-              powerup.type === 1 && zzfx(...[.5,,375,.03,.07,.08,1,2.7,,,302,.05,.05,,,,,.93,.01,,607]); // Pickup 61
+              powerup.type === 0 && zzfx(...[1.6, , 291, .01, .21, .35, , 2.2, , , -136, .09, .03, , , .2, .2, .7, .28]); // Powerup 47
+              powerup.type === 1 && zzfx(...[.5, , 375, .03, .07, .08, 1, 2.7, , , 302, .05, .05, , , , , .93, .01, , 607]); // Pickup 61
               this.ttl = 0;
             },
             update() {
@@ -1706,11 +1815,11 @@
             },
             draw() {
               const { context: ctx } = this;
-              if(this.frame % 20 < 10) {
+              if (this.frame % 20 < 10) {
                 ctx.fillStyle = this.color;
-                ctx.fillRect(-3, -3, this.width + 6, this.height + 6);  
+                ctx.fillRect(-3, -3, this.width + 6, this.height + 6);
                 ctx.fillStyle = 'black';
-                ctx.fillRect(-2, -2, this.width + 4, this.height + 4);  
+                ctx.fillRect(-2, -2, this.width + 4, this.height + 4);
               }
               ctx.fillStyle = this.color;
               ctx.fillRect(-1, -1, this.width + 2, this.height + 2);
@@ -1725,29 +1834,43 @@
         const waveFrame = frame - wave.frame;
         const totalFrames = wave.frame + (wave.total * wave.interval);
         if (frame >= wave.frame && frame < totalFrames && wave.count < wave.total && waveFrame % wave.interval === 0) {
+          const shieldMultiplier = virtualLevel / currentLevel > 1 ? Math.floor((virtualLevel / currentLevel) * wave.shield * 0.2) : 0;
+
+          if (wave.sprite === 20) {
+            asteroidPool.get({
+              x: wave.xPositions[wave.count],
+              y: -8,
+              dx: wave.dxSpeeds[wave.count],
+              dy: 1,
+              sprite: 2,
+              ttl: Infinity,
+              shield: wave.shield + shieldMultiplier,
+              wave,
+            });
+          } else {
+            const enemy = enemyPool.get({
+              x: -100,
+              y: -100,
+              path: wave.path,
+              rotate: wave.rotate,
+              loop: wave.loop,
+              ttl: Infinity,
+              imune: true,
+              dying: false,
+              shield: wave.shield + shieldMultiplier,
+              maxShield: wave.shield + shieldMultiplier,
+              frame: 0,
+              sprite: wave.sprite,
+              parent: null,
+              isBoss: false,
+              fireMode: wave.fireMode,
+              fireTimer: 0,
+              wave,
+            });
+            processChildren(wave.children || [], enemy);
+          }
           wave.completed = false;
           wave.count += 1;
-          const shieldMultiplier = virtualLevel / currentLevel > 1 ? Math.floor((virtualLevel / currentLevel) * wave.shield * 0.2) : 0;
-          const enemy = enemyPool.get({
-            x: -100,
-            y: -100,
-            path: wave.path,
-            rotate: wave.rotate,
-            loop: wave.loop,
-            ttl: Infinity,
-            imune: true,
-            dying: false,
-            shield: wave.shield + shieldMultiplier,
-            maxShield: wave.shield + shieldMultiplier,
-            frame: 0,
-            sprite: wave.sprite,
-            parent: null,
-            isBoss: false,
-            fireMode: wave.fireMode,
-            fireTimer: 0,
-            wave,
-          });
-          processChildren(wave.children || [], enemy);
         }
         processPowerups(wave.powerups, frame);
         doDialogs && processDialogs(wave.dialogs, frame);
@@ -1765,10 +1888,18 @@
 
         if (target.isAlive() && !source.imune && !target.imune && collides(target, source)) {
 
-          !target.name.includes('powerup-') && !target.isBoss && target.die();
+          // !target.name.includes('powerup-') && !target.isBoss && target.die();
+          if (
+            !target.name.includes('powerup-')
+            && !target.isBoss
+            && source.name !== 'ship-bullet'
+          ) target.die();
 
           if (source.name == 'ship' && target.name == 'enemy') {
             source.hit(50);
+          } else if (source.name == 'ship' && target.name == 'asteroid') {
+            source.die();
+            target.die();
           } else if (source.name == 'ship' && target.name == 'powerup-fire') {
             source.firePowerup(target.value);
             target.die();
@@ -1777,6 +1908,9 @@
             target.die();
           } else if (source.name == 'ship') {
             source.hit(10);
+          } else if (source.name == 'ship-bullet' && target.name == 'asteroid') {
+            source.ttl = 0;
+            target.hit(1);
           }
 
           source.name == 'enemy' && (source.hit(1), ship.score += 10);
@@ -1805,6 +1939,11 @@
     const enemyPool = pool({
       create: createEnemy,
       maxSize: 100,
+    });
+
+    const asteroidPool = pool({
+      create: createAsteroid,
+      maxSize: 10,
     });
 
     const explosionPool = pool({
@@ -1853,13 +1992,13 @@
       anchor: { x: 0, y: 0 },
       draw() {
         const { context: ctx } = this;
-        const value = ship.shield >= 0 ? ship.shield / 5: 0; // ship.shield >= 0 ? 24 * ship.shield / 100 : 0;
+        const value = ship.shield >= 0 ? ship.shield / 5 : 0; // ship.shield >= 0 ? 24 * ship.shield / 100 : 0;
         ctx.strokeStyle = 'white';
         ctx.strokeRect(0, 0, this.width, this.height);
 
         ctx.fillStyle = 'green';
         ship.shield < 25 && (ctx.fillStyle = 'red');
-        ctx.fillRect(2, 2, value, this.height-4);
+        ctx.fillRect(2, 2, value, this.height - 4);
       }
     });
 
@@ -1889,7 +2028,7 @@
           ctx.fillRect(0, 2, this.width, 1);
         },
       });
-      zzfx(...[.9,,413,,.05,.01,1,3.8,-3,-13.4,,,,,,,.11,.65,.07,,237]); // Shoot 124
+      zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
     });
 
     on('enemy-fire', ({ x, y }, mode = 0) => {
@@ -1921,7 +2060,7 @@
           ttl: 400,
         });
       }
-      zzfx(...[.3,,222,.02,.04,.09,3,.3,11,10,,,,,15,,,.53,.17]); // Shoot 141
+      zzfx(...[.3, , 222, .02, .04, .09, 3, .3, 11, 10, , , , , 15, , , .53, .17]); // Shoot 141
     });
 
     on('explosion', (x, y, volume = 50, magnitude = 3, color = 'white') => {
@@ -1929,7 +2068,7 @@
         let angle = Math.random() * 360;
         let maxMagnitude = magnitude;
         let newMagnitude = Math.random() * maxMagnitude + maxMagnitude;
-      
+
         explosionPool.get({
           name: 'particle',
           x,
@@ -1977,19 +2116,20 @@
         });
 
       }
-      zzfx(...[,,45,.03,.21,.6,4,.9,2,-3,,,,.2,,.9,,.45,.26]); // Explosion 39
+      zzfx(...[, , 45, .03, .21, .6, 4, .9, 2, -3, , , , .2, , .9, , .45, .26]); // Explosion 39
     });
 
     on('game-over', () => {
-      setTimeout(() => emit('change-scene', 'game-over', {score: ship.score}), 2000);
+      setTimeout(() => emit('change-scene', 'game-over', { score: ship.score }), 2000);
     });
 
     const qtShip = new Quadtree();
     const qtEnemies = new Quadtree();
+    const qtBullets = new Quadtree();
 
     return scene({
-      objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, enemyPool, explosionPool, textScore, textLives, progressShield, dialog],
-      level: getLevel(currentLevel, 1) ,//levels[0],
+      objects: [starField, ship, powerupPool, bulletPool, enemyBulletPool, asteroidPool, enemyPool, explosionPool, textScore, textLives, progressShield, dialog],
+      level: getLevel(currentLevel, 1),//levels[0],
       frame: 0,
       update() {
         if (dialog.isTalking) {
@@ -2001,13 +2141,19 @@
         levelText.update();
 
         qtShip.clear();
-        qtShip.add(ship, enemyPool.getAliveObjects(), enemyBulletPool.getAliveObjects(),powerupPool.getAliveObjects());
+        qtShip.add(ship, asteroidPool.getAliveObjects(), enemyPool.getAliveObjects(), enemyBulletPool.getAliveObjects(), powerupPool.getAliveObjects());
         checkCollisions(ship, qtShip.get(ship));
 
         qtEnemies.clear();
         enemyPool.getAliveObjects().forEach(enemy => {
           qtEnemies.add(enemy, bulletPool.getAliveObjects());
           checkCollisions(enemy, qtEnemies.get(enemy));
+        });
+
+        qtBullets.clear();
+        bulletPool.getAliveObjects().forEach(bullet => {
+          qtBullets.add(bullet, asteroidPool.getAliveObjects());
+          checkCollisions(bullet, qtBullets.get(bullet));
         });
 
         const wavesLeft = this.level.waves.filter(wave => !wave.completed).length;
@@ -2018,7 +2164,7 @@
           this.level = getLevel(currentLevel, virtualLevel);
           this.frame = 0;
           levelText.text = `LEVEL ${virtualLevel}`;
-          zzfx(...[,,264,.07,.29,.06,1,3.7,,-30,-148,.07,.08,,,,,.76,.22,,-1240]); // Powerup 152
+          zzfx(...[, , 264, .07, .29, .06, 1, 3.7, , -30, -148, .07, .08, , , , , .76, .22, , -1240]); // Powerup 152
         }
 
         textScore.text = `SCORE ${ship.score}`;
