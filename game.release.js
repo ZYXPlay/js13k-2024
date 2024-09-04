@@ -393,7 +393,7 @@
   b.buffer=p;b.connect(zzfxX.destination);b.start();};
 
   function createEnemy (props = {}) {
-    const explosionColors = [null, null, null, 'purple', 'red', 'cyan', 'green', 'yellow', 'pink', 'orange'];
+    const explosionColors = ['pink', 'orange', 'white', 'purple', 'red', 'cyan', 'green', 'yellow', 'pink', 'orange'];
     return gameObject({
       name: 'enemy',
       x: -80,
@@ -1555,6 +1555,7 @@
         if (frame >= wave.frame && frame < totalFrames && wave.count < wave.total && waveFrame % wave.interval === 0) {
           wave.completed = false;
           wave.count += 1;
+          const shieldMultiplier = virtualLevel / currentLevel > 1 ? Math.floor((virtualLevel / currentLevel) * wave.shield * 0.2) : 0;
           const enemy = enemyPool.get({
             x: -100,
             y: -100,
@@ -1564,8 +1565,8 @@
             ttl: Infinity,
             imune: true,
             dying: false,
-            shield: wave.shield + Math.floor(virtualLevel / 4),
-            maxShield: wave.shield + Math.floor(virtualLevel / 4),
+            shield: wave.shield + shieldMultiplier,
+            maxShield: wave.shield + shieldMultiplier,
             frame: 0,
             sprite: wave.sprite,
             parent: null,
