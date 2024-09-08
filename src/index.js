@@ -14,7 +14,7 @@ import { player } from "./engine/globals";
 const ctx = setContext(document.getElementById('c').getContext('2d'));
 ctx.imageSmoothingEnabled = false;
 ctx.setTransform(1, 0, 0, 1, 0, 0);
-ctx.filter = 'url(#remove-alpha)';
+// ctx.filter = 'url(#remove-alpha)';
 
 (async () => {
   initKeys();
@@ -27,7 +27,7 @@ ctx.filter = 'url(#remove-alpha)';
 
   function changeScene(scene, props) {
     clearEvents(['change-scene']);
-    ctx.filter = 'url(#remove-alpha)';
+    // ctx.filter = 'url(#remove-alpha)';
     player.stop();
     switch (scene) {
       case 'game':

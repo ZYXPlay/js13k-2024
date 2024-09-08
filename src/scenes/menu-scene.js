@@ -1,6 +1,6 @@
 import { scene } from "../engine/scene";
 import starfield from "../entities/starfield";
-import { onKey } from "../engine/keyboard";
+import { onKey, offKey } from "../engine/keyboard";
 import { emit } from "../engine/events";
 import { delay } from "../engine/utils";
 import { text } from "../engine/text";
@@ -9,6 +9,7 @@ export default function menuScene() {
   onKey(['enter'], () => {
     emit('change-scene', 'game');
   });
+  offKey(['esc']);
   const starPool = starfield(20);
 
   const titleText = text({
