@@ -1,4 +1,4 @@
-import { clearEvents, emit, on } from "../engine/events";
+import { emit, on } from "../engine/events";
 import { gameObject } from "../engine/game-object";
 import { scene } from "../engine/scene";
 import { text } from "../engine/text";
@@ -6,7 +6,7 @@ import { explosionParticle } from "../entities/explosion-particle";
 import { ship } from "../entities/ship";
 import { pool } from "../engine/pool";
 import starfield from "../entities/starfield";
-import { zzfx, zzfxP } from "../engine/zzfx";
+import { zzfx } from "../engine/zzfx";
 import { asteroid } from "../entities/asteroid";
 import { quadtree } from "../engine/quad-tree";
 import { createPath, degToRad, delay, getContext, rnd } from "../engine/utils";
@@ -17,7 +17,6 @@ import { checkCollisions } from "./game-collisions";
 import { offKey, onKey } from "../engine/keyboard";
 import { powerup } from "../entities/powerup";
 import { getLevelLastFrame, processLevel, totalLevels } from "../levels";
-import { dataAssets } from "../engine/assets";
 import { player } from "../engine/globals";
 
 export default function gameScene() {
@@ -29,7 +28,7 @@ export default function gameScene() {
   });
   offKey(['enter']);
 
-  player.play('song');
+  player.play('song1');
   player.setLoop(true);
 
   const shipInstance = ship({ x: 120, y: 248 });
@@ -334,6 +333,7 @@ export default function gameScene() {
       dialogInstance,
       levelText,
     ],
+    gameOver: false,
     update() {
       this.paused = false;
       if (dialogInstance.isTalking && dialogInstance.pauseOnTalk) {
@@ -351,8 +351,9 @@ export default function gameScene() {
       frame === levelLastFrame && (canSpawnBoss = true);
       processLevel(frame, currentLevel, totalEnemies, canSpawnBoss);
 
-      if (shipInstance.lives <= 0) {
-        emit('game-over');
+      if (shipInstance.lives <= 0 && !this.gameOver) {
+        this.gameOver = true;
+        delay(() => emit('game-over'), 1000);
         return;
       }
 
