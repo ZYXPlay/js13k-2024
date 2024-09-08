@@ -2,10 +2,12 @@ import { emit } from "../engine/events";
 import { createPath } from "../engine/utils";
 import l01 from "./01";
 import l02 from "./02";
+import l03 from "./03";
 
 const levels = [
   l01,
   l02,
+  l03,
 ];
 
 function parseEnemy(data) {
