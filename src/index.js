@@ -2,10 +2,14 @@ import gameLoop from "./engine/game-loop";
 import { setContext } from "./engine/utils";
 import gameScene from "./scenes/game-scene";
 import { initKeys } from "./engine/keyboard";
-import { loadImage } from "./engine/assets";
-import { callbacks, clearEvents, on } from "./engine/events";
+import { loadData, loadImage } from "./engine/assets";
+import { clearEvents, on } from "./engine/events";
 import menuScene from "./scenes/menu-scene";
 import gameOverScene from "./scenes/game-over-scene";
+import zzfxm from "./engine/zzfxm";
+import song1 from "./songs/depp";
+import song2 from "./songs/sanxion";
+import { player } from "./engine/globals";
 
 const ctx = setContext(document.getElementById('c').getContext('2d'));
 ctx.imageSmoothingEnabled = false;
@@ -15,6 +19,8 @@ ctx.filter = 'url(#remove-alpha)';
 (async () => {
   initKeys();
 
+  await loadData('song1', zzfxm, song1);
+  await loadData('song2', zzfxm, song2);
   await loadImage('font.png');
   await loadImage('spritesheet.png');
   await loadImage('spritesheet16.png');
@@ -22,6 +28,7 @@ ctx.filter = 'url(#remove-alpha)';
   function changeScene(scene, props) {
     clearEvents(['change-scene']);
     ctx.filter = 'url(#remove-alpha)';
+    player.stop();
     switch (scene) {
       case 'game':
         currentScene = gameScene();

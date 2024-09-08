@@ -6,7 +6,7 @@ import { explosionParticle } from "../entities/explosion-particle";
 import { ship } from "../entities/ship";
 import { pool } from "../engine/pool";
 import starfield from "../entities/starfield";
-import { zzfx } from "../engine/zzfx";
+import { zzfx, zzfxP } from "../engine/zzfx";
 import { asteroid } from "../entities/asteroid";
 import { quadtree } from "../engine/quad-tree";
 import { createPath, degToRad, delay, getContext, rnd } from "../engine/utils";
@@ -17,6 +17,8 @@ import { checkCollisions } from "./game-collisions";
 import { offKey, onKey } from "../engine/keyboard";
 import { powerup } from "../entities/powerup";
 import { getLevelLastFrame, processLevel, totalLevels } from "../levels";
+import { dataAssets } from "../engine/assets";
+import { player } from "../engine/globals";
 
 export default function gameScene() {
   onKey(['esc'], () => {
@@ -27,6 +29,8 @@ export default function gameScene() {
   });
   offKey(['enter']);
 
+  player.play('song');
+  player.setLoop(true);
 
   const shipInstance = ship({ x: 120, y: 248 });
   const starPool = starfield(20);

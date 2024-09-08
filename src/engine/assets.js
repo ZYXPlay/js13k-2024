@@ -1,4 +1,5 @@
 export let imageAssets = {};
+export let dataAssets = {};
 
 function getUrl(url, base) {
   return new URL(url, base).href;
@@ -8,9 +9,19 @@ function addGlobal() {
   if (!window.__k) {
     window.__k = {
       u: getUrl,
-      i: imageAssets
+      i: imageAssets,
+      d: dataAssets,
     };
   }
+}
+
+export function loadData(index, fnc, params) {
+  addGlobal();
+
+  if (dataAssets[index])
+    return dataAssets[index];
+
+  dataAssets[index] = fnc(...params);
 }
 
 export function loadImage(url) {
