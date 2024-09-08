@@ -1,6 +1,6 @@
 import { GameObject } from "../engine/game-object";
 import { text } from "../engine/text";
-import { zzfx } from "../lib/zzfx";
+import { zzfx } from "../engine/zzfx";
 
 export class Dialog extends GameObject {
   init(props) {

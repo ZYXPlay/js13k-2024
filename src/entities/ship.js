@@ -1,8 +1,7 @@
 import { emit } from "../engine/events";
 import { GameObject } from "../engine/game-object";
-import { keyPressed, onKey } from "../engine/keyboard";
-import { delay, rnd } from "../engine/utils";
-import { clamp } from "../lib/utils";
+import { keyPressed } from "../engine/keyboard";
+import { clamp, delay, rnd } from "../engine/utils";
 
 export class Ship extends GameObject {
   init(props) {

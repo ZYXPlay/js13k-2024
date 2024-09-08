@@ -1,7 +1,6 @@
-import { getContext } from "../lib/utils";
 import { imageAssets } from "./assets";
 import { emit } from "./events";
-import { delay } from "./utils";
+import { delay, getContext } from "./utils";
 
 export class GameObject {
   constructor(props) {
