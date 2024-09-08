@@ -9,7 +9,7 @@
  * @param {() => {update: (dt?: Number) => void, render: Function, init: (properties?: Object) => void, isAlive: () => boolean}} properties.create - Function that returns a new object to be added to the pool when there are no more alive objects.
  * @param {Number} [properties.maxSize=1024] - The maximum number of objects allowed in the pool. The pool will never grow beyond this size.
  */
-class Pool {
+export class Pool {
   /**
    * @docs docs/api_docs/pool.js
    */
@@ -98,7 +98,7 @@ class Pool {
         i < this.size && this.objects.length < this.maxSize;
         i++
       ) {
-        this.objects.push(this._c({id: ''}));
+        this.objects.push(this._c());
       }
     }
 
@@ -169,4 +169,6 @@ class Pool {
   }
 }
 
-export { Pool as PoolClass };
+export function pool(properties) {
+  return new Pool(properties);
+}

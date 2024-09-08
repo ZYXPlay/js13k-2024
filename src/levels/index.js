@@ -1,64 +1,77 @@
-import { createPath } from '../lib/utils';
-import l01 from './01';
-import l02 from './02';
-import l03 from './03';
-import l04 from './04';
+import { emit } from "../engine/events";
+import { createPath } from "../engine/utils";
+import l01 from "./01";
+import l02 from "./02";
 
-const levels = [l01, l02, l03, l04];
+const levels = [
+  l01,
+  l02,
+];
 
-export function getLevel(level, virtualLevel) {
-  return parseLevel(levels[level - 1], virtualLevel);
+function parseEnemy(data) {
+  return {
+    sprite: data[2],
+    rotate: data[3],
+    loop: data[4],
+    shield: data[5],
+    fireMode: data[6],
+    fireRate: data[7],
+    path: createPath(data[8]),
+  };
+}
+
+export function getLevelLastFrame(index) {
+  const level = levels[index];
+  // Get the max frame from all level.
+  let lastFrame = Math.max(
+    ...Object.keys(level[0]),
+    ...Object.keys(level[1]),
+  );
+
+  // Get info from last enemy/asteroid and calculate the last frame
+  // taking into total and interval.
+  let o = level[0][lastFrame];
+  o ?? (o = level[1][lastFrame]);
+  lastFrame += o[1] / 1000 * 60 * o[0];
+
+  return lastFrame;
 }
 
 export const totalLevels = levels.length;
 
-function parseDialog(dialog) {
-  const [frame, character, pause, texts] = dialog;
-  return {
-    frame,
-    character,
-    pause,
-    texts,
-  };
-}
+export function processLevel(frame = 0, currentLevel = 0, totalActiveEnemies = 0, canSpawnBoss = false) {
+  const level = levels[currentLevel];
+  const lastFrame = getLevelLastFrame(currentLevel);
 
-function parsePowerup(powerup) {
-  const [frame, x, speed, type, value] = powerup;
-  return {
-    frame,
-    x,
-    speed,
-    type,
-    value,
-  };
-}
+  // Enemies
+  if (level[0][frame]) {
+    const o = level[0][frame];
+    emit('spawn-enemy', o[0], o[1], parseEnemy(o));
+  }
 
-function parseLevel(level, virtualLevel) {
-  const waves = [];
+  // Asteroids
+  if (level[1][frame]) {
+    emit('spawn-asteroid', ...level[1][frame]);
+  }
 
-  level.forEach((wave) => {
-    const [frame, previous, sprite, rotate, shield, total, interval, loop, fireMode, path = '', dialogs = [], powerups = [], children = [], xPositions = [], dxSpeeds=[]] = wave;
-    waves.push({
-      frame,
-      previous,
-      sprite,
-      rotate,
-      shield,
-      total: children.length > 0 ? total : total + Math.floor(virtualLevel / 4),
-      interval,
-      loop,
-      fireMode,
-      path: sprite !== 20 && createPath(path),
-      dialogs: dialogs.map(parseDialog),
-      powerups: powerups.map(parsePowerup),
-      count: 0,
-      completed: false,
-      killed: 0,
-      children,
-      xPositions,
-      dxSpeeds,
-    });
-  });
+  // Powerups
+  if (level[2][frame]) {
+    emit('spawn-powerup', ...level[2][frame]);
+  }
 
-  return { waves };
+  // Dialogs
+  if (level[3][frame]) {
+    emit('set-dialog', ...level[3][frame]);
+  }
+
+  // No boss? Go to next level.
+  if (level[4].length === 0 && frame >= lastFrame && totalActiveEnemies === 0) {
+    const newLevel = currentLevel + 1 >= totalLevels ? 0 : currentLevel + 1;
+    emit('next-level', newLevel);
+  }
+
+  // Boss
+  if (level[4].length > 0 && canSpawnBoss && totalActiveEnemies === 0) {
+    emit('spawn-boss', ...level[4]);
+  }
 }

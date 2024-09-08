@@ -1,55 +1,57 @@
-import gameLoop from "./lib/game-loop";
-import { getContext, setContext } from "./lib/utils";
-import { initKeys, offKey, onKey } from "./lib/keyboard";
-import { loadImage } from "./lib/assets";
-import gameScene from "./game-scene";
-import menuScene from "./menu-scene";
-import gameOverScene from "./game-over-scene";
-import { clearEvents, on } from "./lib/events";
+import gameLoop from "./engine/game-loop";
+import { setContext } from "./engine/utils";
+import gameScene from "./scenes/game-scene";
+import { initKeys } from "./engine/keyboard";
+import { loadImage } from "./engine/assets";
+import { callbacks, clearEvents, on } from "./engine/events";
+import menuScene from "./scenes/menu-scene";
+import gameOverScene from "./scenes/game-over-scene";
 
 const ctx = setContext(document.getElementById('c').getContext('2d'));
-ctx.imageSmoothingEnabled = false
+ctx.imageSmoothingEnabled = false;
 ctx.setTransform(1, 0, 0, 1, 0, 0);
 ctx.filter = 'url(#remove-alpha)';
 
-initKeys();
-
-function toggleExperience() {
-  const ctx = getContext();
-  if (ctx.filter === 'url(#remove-alpha)') {
-    ctx.filter = 'none';
-  } else {
-    ctx.filter = 'url(#remove-alpha)';
-  }
-}
-
 (async () => {
+  initKeys();
+
   await loadImage('font.png');
   await loadImage('spritesheet.png');
   await loadImage('spritesheet16.png');
 
-  onKey('e', toggleExperience);
-
-  on('change-scene', (scene, options) => {
-    offKey(['enter', 'esc']);
+  function changeScene(scene, props) {
     clearEvents(['change-scene']);
-    scene === 'game' && (currentScene = gameScene());
-    scene === 'menu' && (currentScene = menuScene());
-    scene === 'game-over' && (currentScene = gameOverScene(options));
-  });
+    ctx.filter = 'url(#remove-alpha)';
+    switch (scene) {
+      case 'game':
+        currentScene = gameScene();
+        break;
+      case 'menu':
+        currentScene = menuScene();
+        break;
+      case 'game-over':
+        console.log('game-over', props);
+        currentScene = gameOverScene(props);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  on('change-scene', (scene, props) => changeScene(scene, props));
 
   let currentScene = menuScene();
-  let frame = 0;
-  
-  const game = gameLoop({
-    update() {
-      currentScene.update();
-      frame++;
+
+  const loop = gameLoop({
+    update(dt) {
+      currentScene.update(dt);
     },
     render() {
       currentScene.render();
-    },
+    }
   });
 
-  game.start();
+  loop.start();
+
 })();

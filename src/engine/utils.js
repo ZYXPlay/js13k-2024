@@ -71,3 +71,11 @@ export function getRect(obj) {
     height
   };
 }
+
+export function delay(callback, ms, ...args) {
+  return setTimeout(callback, ms, ...args);
+}
+
+export function rnd(min = 0, max = 1) {
+  return (Math.random())*(max-min)+min;
+}

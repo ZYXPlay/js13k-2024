@@ -72,7 +72,7 @@ function getIndices(object, bounds) {
  * @param {Number} [properties.maxObjects=25] - Maximum number of objects a node can have before splitting.
  * @param {{x: Number, y: Number, width: Number, height: Number}} [properties.bounds] - The 2D space (x, y, width, height) the quadtree occupies. Defaults to the entire canvas width and height.
  */
-class Quadtree {
+export class Quadtree {
   /**
    * @docs docs/api_docs/quadtree.js
    */
@@ -286,4 +286,6 @@ class Quadtree {
   }
 }
 
-export default Quadtree;
+export function quadtree(props) {
+  return new Quadtree(props);
+}

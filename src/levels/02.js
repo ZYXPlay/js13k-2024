@@ -1,104 +1,68 @@
-export default [ // waves
-  [
-    100, // start at frame
-    true, // wait for previous wave
-    5, // enemy type
-    true, // rotate
-    2, // shield
-    3, // total
-    60, // interval
-    false, // loop
-    0, // mode
-    'M287 12.5L-21 60.5L272 106.5L-21 137.5L272 185.5L-18.5 237.5', // path
-    [],
-    [],
-  ],
-  [ // wave
-    400, // start at frame
-    false, // wait for previous wave
-    0, // enemy type
-    false, // rotate
+export default [
+  { // enemies
+    2000: [ // frame
+      3, // total
+      1000, // interval (ms) frame = 1000 / 1000 * 60 = 60
+      3, // sprite
+      true, // rotate
+      false, // loop
+      1, // shield
+      0, // fire mode
+      200, // fire rate
+      'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27', // path
+    ],
+    1000: [
+      5, // total
+      1500, // interval
+      6, // sprite
+      false, // rotate
+      false, // loop
+      1, // shield
+      0, // fire mode
+      130, // fire rate
+      'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+    ],
+  },
+  { // asteroids
+    // 2000: [
+    //   20, // total
+    //   1000, // interval ms
+    //   [20, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
+    //   [.1, -.1, 0, -.1, .1, -.1, 0, .1, 0, .1], // dx speeds
+    //   [1, .5, .7, .5, .9, .5, 1, .8, .4, .7], // dy speeds
+    // ],
+  }, 
+  { // powerups
+    500: [
+      'fire', // type
+      128, // x
+      .6, // velocity
+    ],
+    550: [
+      'shield', // type
+      140, // x
+      .3, // velocity
+    ],
+  },
+  { // dialogs
+    // 500: [
+    //   false, // pause gameplay
+    //   [
+    //     'A FULL WAVE IS IMINENT',
+    //     '    ',
+    //   ], // texts
+    // ],
+  },
+  [ // boss
+    0, // sprite
     10, // shield
-    1, // total
-    50, // interval
-    true, // loop
-    2, // fire mode
-    'M131 57s-56 130 0 129c57 0 99-32 69-67s-33-85-69-75-71 38-71 75c1 37 25 52 64 51 39 0 61-22 60-51-1-30-21-46-47-47-25-1-56 17-56 47 0 29 12 32 43 29s39-11 39-29-6-25-26-25-32 4-36 25c-3 20 9 18 23 11 13-7 17-11 17-11', // path
-    // 'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
-    [ // dialogs
-      [ // dialog
-        99, // frame
-        0, // character
-        true, // pause gameplay
-        [ // texts
-          'SOMETHING BIG IS COMING',
-        ],
-      ],
-    ],
-    [ // powerups
-      [ // powerup
-        200, // frame
-        120, // x
-        .5, // speed
-        0, // type
-        10, // value
-      ],
-      [ // powerup
-        400, // frame
-        200, // x
-        .5, // speed
-        1, // type
-        10, // value
-      ],
-      [ // powerup
-        1600, // frame
-        200, // x
-        .5, // speed
-        0, // type
-        10, // value
-      ],
-      [ // powerup
-        2900, // frame
-        120, // x
-        .5, // speed
-        0, // type
-        10, // value
-      ],
-    ],
-    [ // children
-      [ // child
-        8, // enemy type
-        false, // rotate
-        1, // shield
-        16, // total
-        0, // fire mode
-      ],
-    ],
-  ],
-  [ // wave
-    1000, // start at frame
-    false, // wait for previous wave
-    0, // enemy type
-    false, // rotate
-    5, // shield
-    1, // total
-    50, // interval
-    true, // loop
-    2, // fire mode
-    // 'M131 57s-56 130 0 129c57 0 99-32 69-67s-33-85-69-75-71 38-71 75c1 37 25 52 64 51 39 0 61-22 60-51-1-30-21-46-47-47-25-1-56 17-56 47 0 29 12 32 43 29s39-11 39-29-6-25-26-25-32 4-36 25c-3 20 9 18 23 11 13-7 17-11 17-11', // path
-    'M244 12H22c-14 0-11 9 0 9h214c17 0 17 10 0 10H22C4 31 8 43 22 43h214c20 0 19 15 0 15H22C6 58 6 71 22 71h244', // path
-    [ // dialogs
-    ],
-    [ // powerups
-    ],
-    [ // children
-      [ // child
-        5, // enemy type
-        false, // rotate
-        1, // shield
-        4, // total
-        1, // fire mode
-      ],
-    ],
+    200, // fire rate
+    'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
+    40, // boss radius
+    32, // total children
+    9, // children sprite
+    1, // fire mode children
+    60, // children speed
+    250, // children fire rate
   ],
 ];
