@@ -15,11 +15,12 @@ export class Enemy extends GameObject {
       firstRun: true,
       debryColor: 'white',
       fireRate: 200,
+      speed: 1,
       ...props,
     };
 
     super.init(properties);
-    this.path && (this.ttl = Math.floor(properties.path.getTotalLength()));
+    this.path && (this.ttl = Math.floor(properties.path.getTotalLength() / this.speed));
     this.loop && (this.ttl = Infinity);
   }
   fire() {
@@ -34,8 +35,8 @@ export class Enemy extends GameObject {
     this.rotation = degToRad(180);
 
     if (this.path) {
-      const xy = this.path.getPointAtLength(this.frame);
-      const nextXy = this.path.getPointAtLength(this.frame + 1);
+      const xy = this.path.getPointAtLength(this.frame * this.speed);
+      const nextXy = this.path.getPointAtLength(this.frame * this.speed + 1);
       this.x = Math.floor(xy.x);
       this.y = Math.floor(xy.y);
       this.rotate && (this.rotation = degToRad(90) + (angleToTarget(xy, nextXy)));
@@ -50,8 +51,8 @@ export class Enemy extends GameObject {
     //   this.rotation = degToRad(180);
     // }
 
-    this.firstRun && (this.scaleX = this.scaleY = clamp(0, 1, (this.frame + 1) / 100));
-    !this.loop && this.ttl < 100 && (this.scaleX = this.scaleY = clamp(0, 1, this.ttl / 100));
+    this.firstRun && (this.scaleX = this.scaleY = clamp(0, 1, (this.frame * this.speed + 1) / 100));
+    !this.loop && this.ttl < (100) && (this.scaleX = this.scaleY = clamp(0, 1, (this.ttl) / 100));
 
     // Imunity via scale? why not?
     this.scaleX < 1 && (this.imune = true);
@@ -60,7 +61,7 @@ export class Enemy extends GameObject {
     // Only fire when the enemy is fully visible, using scale...
     this.scaleX == 1 && this.frame % this.fireRate === 0 && this.fire();
 
-    this.path && this.frame >= this.path.getTotalLength() && this.loop && (this.frame = 0, this.firstRun = false);
+    this.path && (this.frame * this.speed) >= this.path.getTotalLength() && this.loop && (this.frame = 0, this.firstRun = false);
 
     this.frame++;
     this.ttl--;

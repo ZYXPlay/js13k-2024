@@ -1,7 +1,9 @@
+import { dataAssets } from "../engine/assets";
 import { emit } from "../engine/events";
 import { GameObject } from "../engine/game-object";
 import { keyPressed } from "../engine/keyboard";
 import { clamp, delay, rnd } from "../engine/utils";
+import { zzfxP } from "../engine/zzfx";
 
 export class Ship extends GameObject {
   init(props) {
@@ -24,6 +26,7 @@ export class Ship extends GameObject {
     this.spawn();
   }
   powerUp(powerup) {
+    zzfxP(dataAssets['powerup']);
     if (powerup.type === 'shield') {
       this.shield += 50;
       this.shield > 100 && (this.shield = 100);
@@ -62,6 +65,7 @@ export class Ship extends GameObject {
     }, 200);
   }
   die() {
+    emit('ship-die');
     emit('explosion', this.x, this.y - 4, 60, 4, 'white');
     this.dying = true;
     this.ttl = 0;

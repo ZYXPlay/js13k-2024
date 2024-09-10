@@ -1,32 +1,27 @@
 import { getPath } from "../paths";
 export default [
   { // enemies
-    500: [
-      3, // total
-      400, // interval
-      4, // sprite
+    2500: [
+      13, // total
+      200, // interval
+      5, // sprite
       true, // rotate
       true, // loop
       1, // shield
       0, // fire mode
-      200, // fire rate
-      getPath('sandClock'), // path
-      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-    ],
-    1000: [
-      3, // total
-      400, // interval
-      5, // sprite
-      true, // rotate
-      true, // loop
-      2, // shield
-      0, // fire mode
-      200, // fire rate
-      getPath('sandClock'), // path
+      50, // fire rate
+      getPath('spiral'), // path
       // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
     ],
   },
   { // asteroids
+    1000: [
+      13, // total
+      1000, // interval ms
+      [20, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
+      [0, -.1, 0, -.1, .1, -.1, 0, .1, 0, .1], // dx speeds
+      [1, .5, .7, .5, .9, .5, 1, .8, .4, .7], // dy speeds
+    ],
   }, 
   { // powerups
     1500: [
@@ -39,20 +34,12 @@ export default [
     100: [
       false, // pause gameplay
       [
-        'CAPTAIN',
-        '    ',
-        'WE DETECTED SOME ENEMY SCOUTS',
-        'BETTER DESTROY THEM'
-      ], // texts
-    ],
-    1000: [
-      false, // pause gameplay
-      [
-        'TOO LATE!',
-        'THEY ARE COMING',
-        'WITH A FULL FLEET',
-        '    ',
-        'GOOD LUCK!'
+        'HERE COME MORE ASTEROIDS',
+        '12 PLUS 1, HEHE!',
+        '         ',
+        'ALSO 13 SHIPS',
+        '        ',
+        'OH MAN! NOT AGAIN!',
       ], // texts
     ],
   },

@@ -3,7 +3,7 @@
   <g clip-path="url(#a)">
     <path fill="#fff" d="M0 0h256v240H0z"/>
     <path fill="#D9D9D9" d="M0 0h256v240H0z"/>
-    <path d="M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27" stroke="#000"/>
+    <path d="M27-33v238c0 42 61 41 61 0V41c0-44 64-44 64 0v164c0 43 71 33 71 0V-27" stroke="#000"/>
   </g>
   <defs>
     <clipPath id="a">

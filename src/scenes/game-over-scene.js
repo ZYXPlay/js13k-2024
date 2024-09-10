@@ -6,7 +6,8 @@ import { delay, rnd } from "../engine/utils";
 import { text } from "../engine/text";
 import { pool } from "../engine/pool";
 import { explosionParticle } from "../entities/explosion-particle";
-import { zzfx } from "../engine/zzfx";
+import { zzfxP } from "../engine/zzfx";
+import { dataAssets } from "../engine/assets";
 
 export default function gameOverScene(
   {
@@ -19,7 +20,7 @@ export default function gameOverScene(
   });
 
   on('explosion', (x, y, volume, magnitude, color) => {
-    zzfx(...[, , 45, .03, .21, .6, 4, .9, 2, -3, , , , .2, , .9, , .45, .26]); // Explosion 39
+    zzfxP(dataAssets['explosion']);
 
     for (let i = 0; i < volume; i++) {
       explosionPool.get({

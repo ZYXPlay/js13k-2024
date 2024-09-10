@@ -3,11 +3,18 @@ import { createPath } from "../engine/utils";
 import l01 from "./01";
 import l02 from "./02";
 import l03 from "./03";
+import l04 from "./04";
+import l05 from "./05";
+import l06 from "./06";
+
 
 const levels = [
   l01,
   l02,
   l03,
+  l04,
+  l05,
+  l06,
 ];
 
 function parseEnemy(data) {

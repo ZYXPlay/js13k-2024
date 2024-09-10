@@ -1,6 +1,5 @@
 import { imageAssets } from "../engine/assets";
 import { GameObject } from "../engine/game-object";
-import { zzfx } from "../engine/zzfx";
 
 export class Powerup extends GameObject {
   init(props) {
@@ -10,7 +9,7 @@ export class Powerup extends GameObject {
       width: 16,
       height: 16,
       taken: false,
-      ttl: 600,
+      // ttl: 600,
       anchor: { x: .5, y: .5 },
       spritesheet: [imageAssets['font.png'], 8, 8],
       ...props,
@@ -20,7 +19,10 @@ export class Powerup extends GameObject {
     this.taken = true;
     this.ttl = 10;
     this.frame = 0;
-    zzfx(...[1.5, , 1000, , .1, .1, 1, 1.5, , , , , , , , .1, .5, .1]); // Pickup 74
+  }
+  update() {
+    this.y > 248 && (this.ttl = 0);
+    super.update();
   }
   draw() {
     const { context: ctx, type, taken, frame } = this;

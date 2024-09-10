@@ -1,6 +1,7 @@
+import { dataAssets } from "../engine/assets";
 import { GameObject } from "../engine/game-object";
 import { text } from "../engine/text";
-import { zzfx } from "../engine/zzfx";
+import { zzfxP } from "../engine/zzfx";
 
 export class Dialog extends GameObject {
   init(props) {
@@ -57,7 +58,7 @@ export class Dialog extends GameObject {
     this.talking = false;
     let t = this.texts[this.textsIndex] + '      ';
     t[this.textIndex] !== ' ' && (this.talking = true);
-    this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfx(...[1.5,,261,.01,.02,.08,1,1.5,-0.5,,,-0.5,,,,,.9,.05]));
+    this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfxP(dataAssets['typing']));
     this.textsIndex < this.texts.length && (this.text.text = t.slice(0, this.textIndex));
     this.frame++;
     if (this.textIndex >= t.length) {      

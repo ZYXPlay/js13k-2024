@@ -6,10 +6,10 @@ import { explosionParticle } from "../entities/explosion-particle";
 import { ship } from "../entities/ship";
 import { pool } from "../engine/pool";
 import starfield from "../entities/starfield";
-import { zzfx } from "../engine/zzfx";
+import { zzfxP } from "../engine/zzfx";
 import { asteroid } from "../entities/asteroid";
 import { quadtree } from "../engine/quad-tree";
-import { createPath, degToRad, delay, getContext, rnd } from "../engine/utils";
+import { clamp, createPath, degToRad, delay, rnd } from "../engine/utils";
 import { enemy } from "../entities/enemy";
 import { boss } from "../entities/boss";
 import { dialog } from "../entities/dialog";
@@ -18,6 +18,7 @@ import { offKey, onKey } from "../engine/keyboard";
 import { powerup } from "../entities/powerup";
 import { getLevelLastFrame, processLevel, totalLevels } from "../levels";
 import { player } from "../engine/globals";
+import { dataAssets } from "../engine/assets";
 
 export default function gameScene() {
   onKey(['esc'], () => {
@@ -26,17 +27,24 @@ export default function gameScene() {
   onKey(['p'], () => {
     emit('pause');
   });
+  onKey(['m'], () => {
+    if (player.playing) {
+      player.stop();
+    } else {
+      player.start();
+    }
+  });
   offKey(['enter']);
+  onKey(['enter'], () => dialogInstance.skip());
 
-  player.play('song1');
-  player.setLoop(true);
+  player.set('song1');
+  player.start();
 
   const shipInstance = ship({ x: 120, y: 248 });
   const starPool = starfield(20);
   const dialogInstance = dialog();
-  onKey(['enter'], () => dialogInstance.skip());
-  const ctx = getContext();
   let currentLevel = 0, virtualLevel = 0;
+  let levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.5) : 0;
   let frame = 0;
   let firstRun = true;
   let canSpawnBoss = false;
@@ -117,12 +125,53 @@ export default function gameScene() {
     }
   });
 
+  const visionEffect = gameObject({
+    x: 0, y: 0, active: false, radius: 256,
+    update() {},
+    draw() {
+      const { context: ctx } = this;
+      ctx.save();
+      // if (this.active) {
+        ctx.beginPath();
+        ctx.arc(shipInstance.x, shipInstance.y, this.radius, 0, Math.PI * 2, true);
+        ctx.clip();
+      // }
+    },
+    start() {
+      this.radius = 256;
+      this.active = true;
+    },
+    end() {
+      this.active = false;
+    },
+    update() {
+      this.active && this.radius > 60 && (this.radius -= 1);
+      !this.active && this.radius < 256 && (this.radius += 1);
+      this.advance();
+    },
+    render() {
+      this.draw();
+    }
+  });
+
+  const visionEffectEnd = gameObject({
+    x: 0, y: 0,
+    update() {},
+    draw() {
+      const { context: ctx } = this;
+      ctx.restore();
+    },
+    render() {
+      this.draw();
+    }
+  });
+
   on('hit', () => {
-    zzfx(...[2.3, , 330, , .06, .17, 2, 3.7, , , , , .05, .4, 2, .5, .13, .89, .05, .17]); // Hit 56
+    zzfxP(dataAssets['hit']);
   });
 
   on('explosion', (x, y, volume, magnitude, color) => {
-    zzfx(...[, , 45, .03, .21, .6, 4, .9, 2, -3, , , , .2, , .9, , .45, .26]); // Explosion 39
+    zzfxP(dataAssets['explosion']);
 
     for (let i = 0; i < volume; i++) {
       i % 2 == 0 && explosionPool.get({
@@ -146,7 +195,7 @@ export default function gameScene() {
   });
 
   on('ship-fire', (x, y, dx) => {
-    zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
+    zzfxP(dataAssets['shoot']);
     shipBulletPool.get({
       name: 'ship-bullet',
       x,
@@ -165,8 +214,12 @@ export default function gameScene() {
     });
   });
 
+  on('ship-die', () => {
+    emit('spawn-powerup', 'fire', 128, .6);
+  });
+
   on('enemy-fire', (x, y) => {
-    zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
+    zzfxP(dataAssets['shoot']);
     const vx = (shipInstance.x - 4) - x;
     const vy = (shipInstance.y - 4) - y;
     const dist = Math.hypot(vx, vy) / 1;
@@ -180,12 +233,12 @@ export default function gameScene() {
       width: 2,
       height: 2,
       color: 'red',
-      ttl: 200,
+      ttl: 300,
     });
   });
 
   on('boss-fire', (x, y) => {
-    zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
+    zzfxP(dataAssets['shoot2']);
 
     for (let i = 0; i < 12; i++) {
       const dx = Math.cos(degToRad(30 * i)) * 1;
@@ -205,7 +258,7 @@ export default function gameScene() {
   });
 
   on('score', value => {
-    shipInstance.score += value;
+    shipInstance.score += Math.floor(value + (levelMultiplier * 2));
   });
 
   on('spawn-boss', (
@@ -246,22 +299,27 @@ export default function gameScene() {
   });
 
   on('spawn-enemy', (total, interval, props) => {
-    const shieldMultiplier = (virtualLevel + 1) / (currentLevel + 1) > 1 ? Math.floor(((virtualLevel + 1) / (currentLevel + 1)) * props.shield * 0.2) : 0;
-
+    total = total + levelMultiplier;
     for (let i = 0; i < total; i++) {
       const angle = i * (360 / total);
+      const speed = clamp(1, 2, props.sprite / 4);
       delay((angle) => {
         enemyPool.get({
           ...props,
+          speed,
           anglePlacement: degToRad(angle),
-          shield: props.shield + shieldMultiplier,
+          shield: props.shield + levelMultiplier,
         });
       }, i * interval, angle);
     }
   });
 
   on('spawn-asteroid', (total, interval, positions, speedsX, speedsY) => {
-    const shieldMultiplier = (virtualLevel + 1) / (currentLevel + 1) > 1 ? Math.floor(((virtualLevel + 1) / (currentLevel + 1)) * 10 * 0.2) : 0;
+    if (total === 13) {
+      visionEffect.start();
+      delay(() => visionEffect.end(), 15000);
+    }
+
     let vi = 0;
     for (let i = 0; i < total; i++) {
       vi > positions.length - 1 && (vi = 0);
@@ -272,7 +330,7 @@ export default function gameScene() {
           y: -8,
           dx: speedsX[vi],
           dy: speedsY[vi],
-          shield: 10 + shieldMultiplier,
+          shield: 10 + levelMultiplier,
         });
       }, i * interval, i, vi);
 
@@ -292,11 +350,14 @@ export default function gameScene() {
   });
 
   on('next-level', level => {
+    canSpawnBoss = false;
     currentLevel = level;
     virtualLevel++;
     frame = 0;
     firstRun = false;
     levelLastFrame = getLevelLastFrame(level);
+    levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.25) : 0;
+    emit('score', 100);
   });
 
   on('boss-die', () => {
@@ -318,9 +379,8 @@ export default function gameScene() {
 
   return scene({
     children: [
+      visionEffect,
       starPool,
-      textScore,
-      textLives,
       shipBulletPool,
       enemyBulletPool,
       shipInstance,
@@ -329,9 +389,12 @@ export default function gameScene() {
       asteroidPool,
       powerupPool,
       explosionPool,
-      progressShield,
+      visionEffectEnd,
       dialogInstance,
+      progressShield,
       levelText,
+      textScore,
+      textLives,
     ],
     gameOver: false,
     update() {

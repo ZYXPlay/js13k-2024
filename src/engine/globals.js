@@ -1,15 +1,35 @@
 import { dataAssets } from "./assets";
-import { zzfxP } from "./zzfx";
+import { zzfxP, zzfxX } from "./zzfx";
 
 export const player = {
-  player: null,
-  play(index) {
-    this.player = zzfxP(...dataAssets[index]);
+  node: null,
+  playing: false,
+  buffer: null,
+  async set(song) {
+    const isPlaying = !!this.node;
+    if (isPlaying) {
+      await this.stop();
+    }
+    this.buffer = dataAssets[song];
+
+    if (isPlaying) {
+      await this.start();
+    } else {
+      // ready.
+    }
   },
-  stop() {
-    this.player && this.player.stop();
+  async start() {
+    if (this.node) return;
+    this.node = zzfxP(...this.buffer);
+    this.node.loop = true;
+    await zzfxX.resume();
+    this.playing = true;
   },
-  setLoop(loop) {
-    this.player && (this.player.loop = loop);
-  }
+  async stop() {
+    if (!this.node) return;
+    this.node.stop();
+    this.node.disconnect();
+    this.node = null;
+    this.playing = false;
+  },
 };

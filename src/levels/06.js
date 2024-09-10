@@ -2,27 +2,63 @@ import { getPath } from "../paths";
 export default [
   { // enemies
     500: [
-      3, // total
+      10, // total
       400, // interval
-      4, // sprite
-      true, // rotate
-      true, // loop
-      1, // shield
-      0, // fire mode
-      200, // fire rate
-      getPath('sandClock'), // path
-      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-    ],
-    1000: [
-      3, // total
-      400, // interval
-      5, // sprite
-      true, // rotate
-      true, // loop
+      3, // sprite
+      false, // rotate
+      false, // loop
       2, // shield
       0, // fire mode
       200, // fire rate
-      getPath('sandClock'), // path
+      getPath('zzLeft'), // path
+      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+    ],
+    800: [
+      10, // total
+      400, // interval
+      4, // sprite
+      false, // rotate
+      false, // loop
+      2, // shield
+      0, // fire mode
+      200, // fire rate
+      getPath('zzRight'), // path
+      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+    ],
+    1500: [
+      10, // total
+      400, // interval
+      3, // sprite
+      false, // rotate
+      false, // loop
+      2, // shield
+      0, // fire mode
+      200, // fire rate
+      getPath('zzLeft'), // path
+      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+    ],
+    1800: [
+      10, // total
+      400, // interval
+      4, // sprite
+      false, // rotate
+      false, // loop
+      2, // shield
+      0, // fire mode
+      200, // fire rate
+      getPath('zzRight'), // path
+      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+    ],
+    2500: [
+      5, // total
+      1000, // interval
+      6, // sprite
+      false, // rotate
+      false, // loop
+      1, // shield
+      0, // fire mode
+      40, // fire rate
+      getPath('spiral'), // path
       // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
     ],
   },
@@ -39,20 +75,8 @@ export default [
     100: [
       false, // pause gameplay
       [
-        'CAPTAIN',
+        'HMMM... ZIGZAGERS?',
         '    ',
-        'WE DETECTED SOME ENEMY SCOUTS',
-        'BETTER DESTROY THEM'
-      ], // texts
-    ],
-    1000: [
-      false, // pause gameplay
-      [
-        'TOO LATE!',
-        'THEY ARE COMING',
-        'WITH A FULL FLEET',
-        '    ',
-        'GOOD LUCK!'
       ], // texts
     ],
   },
