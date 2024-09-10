@@ -551,6 +551,23 @@
     [].concat(keys).map(key => delete callbacks[key]);
   }
 
+  // zzfx() - the universal entry point -- returns a AudioBufferSourceNode
+
+  // zzfxP() - the sound player -- returns a AudioBufferSourceNode
+  const zzfxP=(...t)=>{let e=zzfxX.createBufferSource(),f=zzfxX.createBuffer(t.length,t[0].length,zzfxR);t.map((d,i)=>f.getChannelData(i).set(d)),e.buffer=f,e.connect(zzfxX.destination),e.start();return e};
+
+  // zzfxG() - the sound generator -- returns an array of sample data
+  const zzfxG=(q=1,k=.05,c=220,e=0,t=0,u=.1,r=0,F=1,v=0,z=0,w=0,A=0,l=0,B=0,x=0,G=0,d=0,y=1,m=0,C=0)=>{let b=2*Math.PI,H=v*=500*b/zzfxR**2,I=(0<x?1:-1)*b/4,D=c*=(1+2*k*Math.random()-k)*b/zzfxR,Z=[],g=0,E=0,a=0,n=1,J=0,K=0,f=0,p,h;e=99+zzfxR*e;m*=zzfxR;t*=zzfxR;u*=zzfxR;d*=zzfxR;z*=500*b/zzfxR**3;x*=b/zzfxR;w*=b/zzfxR;A*=zzfxR;l=zzfxR*l|0;for(h=e+m+t+u+d|0;a<h;Z[a++]=f)++K%(100*G|0)||(f=r?1<r?2<r?3<r?Math.sin((g%b)**3):Math.max(Math.min(Math.tan(g),1),-1):1-(2*g/b%2+2)%2:1-4*Math.abs(Math.round(g/b)-g/b):Math.sin(g),f=(l?1-C+C*Math.sin(2*Math.PI*a/l):1)*(0<f?1:-1)*Math.abs(f)**F*q*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-y):a<e+m+t?y:a<h-d?(h-a-d)/u*y:0),f=d?f/2+(d>a?0:(a<h-d?1:(h-a)/d)*Z[a-d|0]/2):f),p=(c+=v+=z)*Math.sin(E*x-I),g+=p-p*B*(1-1E9*(Math.sin(a)+1)%2),E+=p-p*B*(1-1E9*(Math.sin(a)**2+1)%2),n&&++n>A&&(c+=w,D+=w,n=0),!l||++J%l||(c=D,v=H,n=n||1);return Z};
+
+  // zzfxV - global volume
+  const zzfxV=.3;
+
+  // zzfxR - global sample rate
+  const zzfxR=44100;
+
+  // zzfxX - the common audio context
+  const zzfxX=new(window.AudioContext||webkitAudioContext);
+
   class Ship extends GameObject {
     init(props) {
       const properties = {
@@ -572,6 +589,7 @@
       this.spawn();
     }
     powerUp(powerup) {
+      zzfxP(dataAssets['powerup']);
       if (powerup.type === 'shield') {
         this.shield += 50;
         this.shield > 100 && (this.shield = 100);
@@ -610,6 +628,7 @@
       }, 200);
     }
     die() {
+      emit('ship-die');
       emit('explosion', this.x, this.y - 4, 60, 4, 'white');
       this.dying = true;
       this.ttl = 0;
@@ -912,24 +931,6 @@
     starPool.isAlive = () => true;
     return starPool;
   }
-
-  // zzfx() - the universal entry point -- returns a AudioBufferSourceNode
-  const zzfx=(...t)=>zzfxP(zzfxG(...t));
-
-  // zzfxP() - the sound player -- returns a AudioBufferSourceNode
-  const zzfxP=(...t)=>{let e=zzfxX.createBufferSource(),f=zzfxX.createBuffer(t.length,t[0].length,zzfxR);t.map((d,i)=>f.getChannelData(i).set(d)),e.buffer=f,e.connect(zzfxX.destination),e.start();return e};
-
-  // zzfxG() - the sound generator -- returns an array of sample data
-  const zzfxG=(q=1,k=.05,c=220,e=0,t=0,u=.1,r=0,F=1,v=0,z=0,w=0,A=0,l=0,B=0,x=0,G=0,d=0,y=1,m=0,C=0)=>{let b=2*Math.PI,H=v*=500*b/zzfxR**2,I=(0<x?1:-1)*b/4,D=c*=(1+2*k*Math.random()-k)*b/zzfxR,Z=[],g=0,E=0,a=0,n=1,J=0,K=0,f=0,p,h;e=99+zzfxR*e;m*=zzfxR;t*=zzfxR;u*=zzfxR;d*=zzfxR;z*=500*b/zzfxR**3;x*=b/zzfxR;w*=b/zzfxR;A*=zzfxR;l=zzfxR*l|0;for(h=e+m+t+u+d|0;a<h;Z[a++]=f)++K%(100*G|0)||(f=r?1<r?2<r?3<r?Math.sin((g%b)**3):Math.max(Math.min(Math.tan(g),1),-1):1-(2*g/b%2+2)%2:1-4*Math.abs(Math.round(g/b)-g/b):Math.sin(g),f=(l?1-C+C*Math.sin(2*Math.PI*a/l):1)*(0<f?1:-1)*Math.abs(f)**F*q*zzfxV*(a<e?a/e:a<e+m?1-(a-e)/m*(1-y):a<e+m+t?y:a<h-d?(h-a-d)/u*y:0),f=d?f/2+(d>a?0:(a<h-d?1:(h-a)/d)*Z[a-d|0]/2):f),p=(c+=v+=z)*Math.sin(E*x-I),g+=p-p*B*(1-1E9*(Math.sin(a)+1)%2),E+=p-p*B*(1-1E9*(Math.sin(a)**2+1)%2),n&&++n>A&&(c+=w,D+=w,n=0),!l||++J%l||(c=D,v=H,n=n||1);return Z};
-
-  // zzfxV - global volume
-  const zzfxV=.3;
-
-  // zzfxR - global sample rate
-  const zzfxR=44100;
-
-  // zzfxX - the common audio context
-  const zzfxX=new(window.AudioContext||webkitAudioContext);
 
   class Asteroid extends GameObject {
     init(props) {
@@ -1265,11 +1266,12 @@
         firstRun: true,
         debryColor: 'white',
         fireRate: 200,
+        speed: 1,
         ...props,
       };
 
       super.init(properties);
-      this.path && (this.ttl = Math.floor(properties.path.getTotalLength()));
+      this.path && (this.ttl = Math.floor(properties.path.getTotalLength() / this.speed));
       this.loop && (this.ttl = Infinity);
     }
     fire() {
@@ -1284,8 +1286,8 @@
       this.rotation = degToRad(180);
 
       if (this.path) {
-        const xy = this.path.getPointAtLength(this.frame);
-        const nextXy = this.path.getPointAtLength(this.frame + 1);
+        const xy = this.path.getPointAtLength(this.frame * this.speed);
+        const nextXy = this.path.getPointAtLength(this.frame * this.speed + 1);
         this.x = Math.floor(xy.x);
         this.y = Math.floor(xy.y);
         this.rotate && (this.rotation = degToRad(90) + (angleToTarget(xy, nextXy)));
@@ -1300,8 +1302,8 @@
       //   this.rotation = degToRad(180);
       // }
 
-      this.firstRun && (this.scaleX = this.scaleY = clamp(0, 1, (this.frame + 1) / 100));
-      !this.loop && this.ttl < 100 && (this.scaleX = this.scaleY = clamp(0, 1, this.ttl / 100));
+      this.firstRun && (this.scaleX = this.scaleY = clamp(0, 1, (this.frame * this.speed + 1) / 100));
+      !this.loop && this.ttl < (100) && (this.scaleX = this.scaleY = clamp(0, 1, (this.ttl) / 100));
 
       // Imunity via scale? why not?
       this.scaleX < 1 && (this.imune = true);
@@ -1310,7 +1312,7 @@
       // Only fire when the enemy is fully visible, using scale...
       this.scaleX == 1 && this.frame % this.fireRate === 0 && this.fire();
 
-      this.path && this.frame >= this.path.getTotalLength() && this.loop && (this.frame = 0, this.firstRun = false);
+      this.path && (this.frame * this.speed) >= this.path.getTotalLength() && this.loop && (this.frame = 0, this.firstRun = false);
 
       this.frame++;
       this.ttl--;
@@ -1457,7 +1459,7 @@
       this.talking = false;
       let t = this.texts[this.textsIndex] + '      ';
       t[this.textIndex] !== ' ' && (this.talking = true);
-      this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfx(...[1.5,,261,.01,.02,.08,1,1.5,-0.5,,,-0.5,,,,,.9,.05]));
+      this.frame % 5 == 0 && (this.textIndex++, t[this.textIndex] !== ' ' && zzfxP(dataAssets['typing']));
       this.textsIndex < this.texts.length && (this.text.text = t.slice(0, this.textIndex));
       this.frame++;
       if (this.textIndex >= t.length) {      
@@ -1525,7 +1527,7 @@
         width: 16,
         height: 16,
         taken: false,
-        ttl: 600,
+        // ttl: 600,
         anchor: { x: .5, y: .5 },
         spritesheet: [imageAssets['font.png'], 8, 8],
         ...props,
@@ -1535,7 +1537,10 @@
       this.taken = true;
       this.ttl = 10;
       this.frame = 0;
-      zzfx(...[1.5, , 1000, , .1, .1, 1, 1.5, , , , , , , , .1, .5, .1]); // Pickup 74
+    }
+    update() {
+      this.y > 248 && (this.ttl = 0);
+      super.update();
     }
     draw() {
       const { context: ctx, type, taken, frame } = this;
@@ -1563,77 +1568,107 @@
     }
   }
 
-  function powerup(props) {
+  function powerup$1(props) {
     return new Powerup(props);
+  }
+
+  var spiral = 'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z';
+
+  var zigzag = 'M287 13-21 61l293 46-293 31 293 48-290 52';
+
+  var zigzagLeft = 'm-21 13 308 48-293 46 293 31-293 48 291 52';
+
+  var zzLeft = 'm20 7 50 48-48 46 48 31-48 48 48 52';
+
+  var zzRight = 'm237 7-50 48 48 46-48 31 48 48-48 52';
+
+  var sandClock = 'M121 123S-30 40 24 24C78 6 168 7 233 24 298 40-40 214 24 227c63 12 159 12 209 0 51-12-112-104-112-104Z';
+
+  var w = 'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27';
+
+  var wReversed = 'M27-33v238c0 42 61 41 61 0V41c0-44 64-44 64 0v164c0 43 71 33 71 0V-27';
+
+  const paths = {spiral, zigzag, zigzagLeft, zzLeft, zzRight, sandClock, w, wReversed};
+
+  function getPath(path) {
+    return paths[path];
   }
 
   var l01 = [
     { // enemies
-      // 2000: [ // frame
-      //   3, // total
-      //   1000, // interval (ms) frame = 1000 / 1000 * 60 = 60
-      //   3, // sprite
-      //   true, // rotate
-      //   false, // loop
-      //   1, // shield
-      //   0, // fire mode
-      //   200, // fire rate
-      //   'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27', // path
-      // ],
       500: [
-        1, // total
-        1000, // interval
-        6, // sprite
-        false, // rotate
-        false, // loop
+        3, // total
+        400, // interval
+        4, // sprite
+        true, // rotate
+        true, // loop
         1, // shield
         0, // fire mode
-        130, // fire rate
-        'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+        200, // fire rate
+        getPath('sandClock'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      1000: [
+        3, // total
+        400, // interval
+        5, // sprite
+        true, // rotate
+        true, // loop
+        2, // shield
+        0, // fire mode
+        200, // fire rate
+        getPath('sandClock'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
       ],
     },
     { // asteroids
-      // 1000: [
-      //   20, // total
-      //   1000, // interval ms
-      //   [20, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
-      //   [.1, -.1, 0, -.1, .1, -.1, 0, .1, 0, .1], // dx speeds
-      //   [1, .5, .7, .5, .9, .5, 1, .8, .4, .7], // dy speeds
-      // ],
     }, 
     { // powerups
-      500: [
+      1500: [
         'fire', // type
         128, // x
         .6, // velocity
       ],
     },
     { // dialogs
-      500: [
+      100: [
         false, // pause gameplay
         [
-          'A FULL WAVE IS IMINENT',
+          'CAPTAIN',
           '    ',
+          'WE DETECTED SOME ENEMY SCOUTS',
+          'BETTER DESTROY THEM'
+        ], // texts
+      ],
+      1000: [
+        false, // pause gameplay
+        [
+          'TOO LATE!',
+          'THEY ARE COMING',
+          'WITH A FULL FLEET',
+          '    ',
+          'GOOD LUCK!'
         ], // texts
       ],
     },
     [ // boss
-      0, // sprite
-      10, // shield
-      250, // fire rate
-      'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
-      30, // boss radius
-      8, // total children
-      3, // children sprite
-      0, // fire mode children
-      30, // children speed
-      250, // children fire rate
+      // 0, // sprite
+      // 10, // shield
+      // 350, // fire rate
+      // getPath('spiral'), // path
+      // // 'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
+      // 30, // boss radius
+      // 4, // total children
+      // 3, // children sprite
+      // 0, // fire mode children
+      // 60, // children speed
+      // 450, // children fire rate
     ],
   ];
 
   var l02 = [
     { // enemies
-      2000: [ // frame
+      1000: [ // frame
         3, // total
         1000, // interval (ms) frame = 1000 / 1000 * 60 = 60
         3, // sprite
@@ -1642,9 +1677,9 @@
         1, // shield
         0, // fire mode
         200, // fire rate
-        'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27', // path
+        getPath('zigzag'), // path
       ],
-      1000: [
+      2000: [
         5, // total
         1500, // interval
         6, // sprite
@@ -1653,7 +1688,7 @@
         1, // shield
         0, // fire mode
         130, // fire rate
-        'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+        getPath('zigzagLeft'), // path
       ],
     },
     { // asteroids
@@ -1666,7 +1701,7 @@
       // ],
     }, 
     { // powerups
-      500: [
+      2500: [
         'fire', // type
         128, // x
         .6, // velocity
@@ -1678,6 +1713,16 @@
       ],
     },
     { // dialogs
+      100: [
+        false, // pause gameplay
+        [
+          'TOO LATE!',
+          'THEY ARE COMING',
+          'WITH A FULL FLEET',
+          '    ',
+          'GOOD LUCK!'
+        ], // texts
+      ],
       // 500: [
       //   false, // pause gameplay
       //   [
@@ -1689,81 +1734,81 @@
     [ // boss
       0, // sprite
       10, // shield
-      200, // fire rate
+      50, // fire rate
       'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
-      40, // boss radius
-      32, // total children
+      30, // boss radius
+      8, // total children
       9, // children sprite
       1, // fire mode children
-      60, // children speed
-      250, // children fire rate
+      20, // children speed
+      150, // children fire rate
     ],
   ];
 
   var l03 = [
     { // enemies
-      2000: [ // frame
-        3, // total
-        1000, // interval (ms) frame = 1000 / 1000 * 60 = 60
-        3, // sprite
-        true, // rotate
-        false, // loop
-        1, // shield
-        0, // fire mode
-        200, // fire rate
-        'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27', // path
-      ],
-      1000: [
-        5, // total
-        1500, // interval
-        6, // sprite
-        false, // rotate
-        false, // loop
-        1, // shield
-        0, // fire mode
-        130, // fire rate
-        'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-      ],
-      3000: [
-        5, // total
-        1500, // interval
-        8, // sprite
-        true, // rotate
-        false, // loop
-        1, // shield
-        0, // fire mode
-        130, // fire rate
-        'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-      ],
-      4000: [
-        5, // total
-        1500, // interval
-        6, // sprite
-        false, // rotate
-        false, // loop
-        1, // shield
-        0, // fire mode
-        130, // fire rate
-        'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-      ],
-      5000: [
-        5, // total
-        1500, // interval
-        6, // sprite
-        false, // rotate
-        false, // loop
-        1, // shield
-        0, // fire mode
-        130, // fire rate
-        'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-      ],
+      // 2000: [ // frame
+      //   3, // total
+      //   1000, // interval (ms) frame = 1000 / 1000 * 60 = 60
+      //   3, // sprite
+      //   true, // rotate
+      //   false, // loop
+      //   1, // shield
+      //   0, // fire mode
+      //   200, // fire rate
+      //   'M223-33v238c0 42-61 41-61 0V41c0-44-64-44-64 0v164c0 43-71 33-71 0V-27', // path
+      // ],
+      // 1000: [
+      //   5, // total
+      //   1500, // interval
+      //   6, // sprite
+      //   false, // rotate
+      //   false, // loop
+      //   1, // shield
+      //   0, // fire mode
+      //   130, // fire rate
+      //   'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      // ],
+      // 3000: [
+      //   5, // total
+      //   1500, // interval
+      //   8, // sprite
+      //   true, // rotate
+      //   false, // loop
+      //   1, // shield
+      //   0, // fire mode
+      //   130, // fire rate
+      //   'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      // ],
+      // 4000: [
+      //   5, // total
+      //   1500, // interval
+      //   6, // sprite
+      //   false, // rotate
+      //   false, // loop
+      //   1, // shield
+      //   0, // fire mode
+      //   130, // fire rate
+      //   'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      // ],
+      // 5000: [
+      //   5, // total
+      //   1500, // interval
+      //   6, // sprite
+      //   false, // rotate
+      //   false, // loop
+      //   1, // shield
+      //   0, // fire mode
+      //   130, // fire rate
+      //   'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      // ],
     },
     { // asteroids
-      2000: [
-        20, // total
+      1000: [
+        13, // total
         1000, // interval ms
         [20, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
-        [.1, -.1, 0, -.1, .1, -.1, 0, .1, 0, .1], // dx speeds
+        [0, -.1, 0, -.1, .1, -.1, 0, .1, 0, .1], // dx speeds
         [1, .5, .7, .5, .9, .5, 1, .8, .4, .7], // dy speeds
       ],
     }, 
@@ -1783,32 +1828,272 @@
         128, // x
         .6, // velocity
       ],
-      4500: [
-        'shield', // type
-        140, // x
-        .3, // velocity
-      ],
     },
     { // dialogs
-      500: [
+      100: [
         false, // pause gameplay
         [
-          'A FULL WAVE IS IMINENT',
-          '    ',
+          '13 ASTEROIDS DETECTED',
+          '      ',
+          'OOOPSS...',
+          'HOPE THIS DOES NOT TRIGGER',
+          'YOUR TRISKAIDEKAPHOBIA...',
+          '         ',
         ], // texts
       ],
     },
     [ // boss
       0, // sprite
       10, // shield
-      200, // fire rate
+      100, // fire rate
       'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
       40, // boss radius
-      32, // total children
+      4, // total children
       9, // children sprite
       1, // fire mode children
       60, // children speed
-      250, // children fire rate
+      50, // children fire rate
+    ],
+  ];
+
+  var l04 = [
+    { // enemies
+      800: [
+        5, // total
+        400, // interval
+        9, // sprite
+        true, // rotate
+        false, // loop
+        4, // shield
+        0, // fire mode
+        400, // fire rate
+        getPath('zigzag'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      810: [
+        5, // total
+        400, // interval
+        9, // sprite
+        true, // rotate
+        false, // loop
+        4, // shield
+        0, // fire mode
+        400, // fire rate
+        getPath('zigzagLeft'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      2000: [
+        5, // total
+        400, // interval
+        7, // sprite
+        true, // rotate
+        false, // loop
+        4, // shield
+        0, // fire mode
+        400, // fire rate
+        getPath('w'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      2010: [
+        5, // total
+        400, // interval
+        7, // sprite
+        true, // rotate
+        false, // loop
+        4, // shield
+        0, // fire mode
+        400, // fire rate
+        getPath('wReversed'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+    },
+    { // asteroids
+    }, 
+    { // powerups
+      1500: [
+        'fire', // type
+        128, // x
+        .6, // velocity
+      ],
+    },
+    { // dialogs
+      100: [
+        false, // pause gameplay
+        [
+          'THAT CONDITION STILL',
+          'AFFECTING YOUR',
+          'VISION, HUH!?',
+          '         ',
+        ], // texts
+      ],
+    },
+    [ // boss
+      0, // sprite
+      10, // shield
+      250, // fire rate
+      getPath('sandClock'), // path
+      // 'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
+      30, // boss radius
+      8, // total children
+      8, // children sprite
+      0, // fire mode children
+      10, // children speed
+      50, // children fire rate
+    ],
+  ];
+
+  var l05 = [
+    { // enemies
+      2500: [
+        13, // total
+        200, // interval
+        5, // sprite
+        true, // rotate
+        true, // loop
+        1, // shield
+        0, // fire mode
+        50, // fire rate
+        getPath('spiral'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+    },
+    { // asteroids
+      1000: [
+        13, // total
+        1000, // interval ms
+        [20, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
+        [0, -.1, 0, -.1, .1, -.1, 0, .1, 0, .1], // dx speeds
+        [1, .5, .7, .5, .9, .5, 1, .8, .4, .7], // dy speeds
+      ],
+    }, 
+    { // powerups
+      1500: [
+        'fire', // type
+        128, // x
+        .6, // velocity
+      ],
+    },
+    { // dialogs
+      100: [
+        false, // pause gameplay
+        [
+          'HERE COME MORE ASTEROIDS',
+          '12 PLUS 1, HEHE!',
+          '         ',
+          'ALSO 13 SHIPS',
+          '        ',
+          'OH MAN! NOT AGAIN!',
+        ], // texts
+      ],
+    },
+    [ // boss
+      // 0, // sprite
+      // 10, // shield
+      // 350, // fire rate
+      // getPath('spiral'), // path
+      // // 'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
+      // 30, // boss radius
+      // 4, // total children
+      // 3, // children sprite
+      // 0, // fire mode children
+      // 60, // children speed
+      // 450, // children fire rate
+    ],
+  ];
+
+  var l06 = [
+    { // enemies
+      500: [
+        10, // total
+        400, // interval
+        3, // sprite
+        false, // rotate
+        false, // loop
+        2, // shield
+        0, // fire mode
+        200, // fire rate
+        getPath('zzLeft'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      800: [
+        10, // total
+        400, // interval
+        4, // sprite
+        false, // rotate
+        false, // loop
+        2, // shield
+        0, // fire mode
+        200, // fire rate
+        getPath('zzRight'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      1500: [
+        10, // total
+        400, // interval
+        3, // sprite
+        false, // rotate
+        false, // loop
+        2, // shield
+        0, // fire mode
+        200, // fire rate
+        getPath('zzLeft'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      1800: [
+        10, // total
+        400, // interval
+        4, // sprite
+        false, // rotate
+        false, // loop
+        2, // shield
+        0, // fire mode
+        200, // fire rate
+        getPath('zzRight'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+      2500: [
+        5, // total
+        1000, // interval
+        6, // sprite
+        false, // rotate
+        false, // loop
+        1, // shield
+        0, // fire mode
+        40, // fire rate
+        getPath('spiral'), // path
+        // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
+      ],
+    },
+    { // asteroids
+    }, 
+    { // powerups
+      1500: [
+        'fire', // type
+        128, // x
+        .6, // velocity
+      ],
+    },
+    { // dialogs
+      100: [
+        false, // pause gameplay
+        [
+          'HMMM... ZIGZAGERS?',
+          '    ',
+        ], // texts
+      ],
+    },
+    [ // boss
+      // 0, // sprite
+      // 10, // shield
+      // 350, // fire rate
+      // getPath('spiral'), // path
+      // // 'M127 120V43c0-77 99 8 99 77 0 70-35 102-99 102S22 181 22 120s32-84 84-84 85 32 85 84c0 53-28 62-64 62-35 0-68-18-68-62 0-43 25-47 47-47 21 0 48 24 48 47 0 24-7 28-27 28s0-14 0-28Z', // path
+      // 30, // boss radius
+      // 4, // total children
+      // 3, // children sprite
+      // 0, // fire mode children
+      // 60, // children speed
+      // 450, // children fire rate
     ],
   ];
 
@@ -1816,6 +2101,9 @@
     l01,
     l02,
     l03,
+    l04,
+    l05,
+    l06,
   ];
 
   function parseEnemy(data) {
@@ -1887,16 +2175,34 @@
   }
 
   const player = {
-    player: null,
-    play(index) {
-      this.player = zzfxP(...dataAssets[index]);
+    node: null,
+    playing: false,
+    buffer: null,
+    async set(song) {
+      const isPlaying = !!this.node;
+      if (isPlaying) {
+        await this.stop();
+      }
+      this.buffer = dataAssets[song];
+
+      if (isPlaying) {
+        await this.start();
+      }
     },
-    stop() {
-      this.player && this.player.stop();
+    async start() {
+      if (this.node) return;
+      this.node = zzfxP(...this.buffer);
+      this.node.loop = true;
+      await zzfxX.resume();
+      this.playing = true;
     },
-    setLoop(loop) {
-      this.player && (this.player.loop = loop);
-    }
+    async stop() {
+      if (!this.node) return;
+      this.node.stop();
+      this.node.disconnect();
+      this.node = null;
+      this.playing = false;
+    },
   };
 
   function gameScene() {
@@ -1906,17 +2212,24 @@
     onKey(['p'], () => {
       emit('pause');
     });
+    onKey(['m'], () => {
+      if (player.playing) {
+        player.stop();
+      } else {
+        player.start();
+      }
+    });
     offKey(['enter']);
+    onKey(['enter'], () => dialogInstance.skip());
 
-    player.play('song1');
-    player.setLoop(true);
+    player.set('song1');
+    player.start();
 
     const shipInstance = ship({ x: 120, y: 248 });
     const starPool = starfield(20);
     const dialogInstance = dialog();
-    onKey(['enter'], () => dialogInstance.skip());
-    getContext();
     let currentLevel = 0, virtualLevel = 0;
+    let levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.5) : 0;
     let frame = 0;
     let firstRun = true;
     let canSpawnBoss = false;
@@ -1953,7 +2266,7 @@
     });
 
     const powerupPool = pool({
-      create: powerup,
+      create: powerup$1,
       maxSize: 4,
     });
 
@@ -1997,12 +2310,53 @@
       }
     });
 
+    const visionEffect = gameObject({
+      x: 0, y: 0, active: false, radius: 256,
+      update() {},
+      draw() {
+        const { context: ctx } = this;
+        ctx.save();
+        // if (this.active) {
+          ctx.beginPath();
+          ctx.arc(shipInstance.x, shipInstance.y, this.radius, 0, Math.PI * 2, true);
+          ctx.clip();
+        // }
+      },
+      start() {
+        this.radius = 256;
+        this.active = true;
+      },
+      end() {
+        this.active = false;
+      },
+      update() {
+        this.active && this.radius > 60 && (this.radius -= 1);
+        !this.active && this.radius < 256 && (this.radius += 1);
+        this.advance();
+      },
+      render() {
+        this.draw();
+      }
+    });
+
+    const visionEffectEnd = gameObject({
+      x: 0, y: 0,
+      update() {},
+      draw() {
+        const { context: ctx } = this;
+        ctx.restore();
+      },
+      render() {
+        this.draw();
+      }
+    });
+
     on('hit', () => {
-      zzfx(...[2.3, , 330, , .06, .17, 2, 3.7, , , , , .05, .4, 2, .5, .13, .89, .05, .17]); // Hit 56
+      zzfxP(dataAssets['hit']);
     });
 
     on('explosion', (x, y, volume, magnitude, color) => {
-      zzfx(...[, , 45, .03, .21, .6, 4, .9, 2, -3, , , , .2, , .9, , .45, .26]); // Explosion 39
+      zzfxP(dataAssets['explosion']);
 
       for (let i = 0; i < volume; i++) {
         i % 2 == 0 && explosionPool.get({
@@ -2026,7 +2380,7 @@
     });
 
     on('ship-fire', (x, y, dx) => {
-      zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
+      zzfxP(dataAssets['shoot']);
       shipBulletPool.get({
         name: 'ship-bullet',
         x,
@@ -2045,8 +2399,12 @@
       });
     });
 
+    on('ship-die', () => {
+      emit('spawn-powerup', 'fire', 128, .6);
+    });
+
     on('enemy-fire', (x, y) => {
-      zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
+      zzfxP(dataAssets['shoot']);
       const vx = (shipInstance.x - 4) - x;
       const vy = (shipInstance.y - 4) - y;
       const dist = Math.hypot(vx, vy) / 1;
@@ -2060,12 +2418,12 @@
         width: 2,
         height: 2,
         color: 'red',
-        ttl: 200,
+        ttl: 300,
       });
     });
 
     on('boss-fire', (x, y) => {
-      zzfx(...[.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237]); // Shoot 124
+      zzfxP(dataAssets['shoot2']);
 
       for (let i = 0; i < 12; i++) {
         const dx = Math.cos(degToRad(30 * i)) * 1;
@@ -2085,7 +2443,7 @@
     });
 
     on('score', value => {
-      shipInstance.score += value;
+      shipInstance.score += Math.floor(value + (levelMultiplier * 2));
     });
 
     on('spawn-boss', (
@@ -2126,22 +2484,27 @@
     });
 
     on('spawn-enemy', (total, interval, props) => {
-      const shieldMultiplier = (virtualLevel + 1) / (currentLevel + 1) > 1 ? Math.floor(((virtualLevel + 1) / (currentLevel + 1)) * props.shield * 0.2) : 0;
-
+      total = total + levelMultiplier;
       for (let i = 0; i < total; i++) {
         const angle = i * (360 / total);
+        const speed = clamp(1, 2, props.sprite / 4);
         delay((angle) => {
           enemyPool.get({
             ...props,
+            speed,
             anglePlacement: degToRad(angle),
-            shield: props.shield + shieldMultiplier,
+            shield: props.shield + levelMultiplier,
           });
         }, i * interval, angle);
       }
     });
 
     on('spawn-asteroid', (total, interval, positions, speedsX, speedsY) => {
-      const shieldMultiplier = (virtualLevel + 1) / (currentLevel + 1) > 1 ? Math.floor(((virtualLevel + 1) / (currentLevel + 1)) * 10 * 0.2) : 0;
+      if (total === 13) {
+        visionEffect.start();
+        delay(() => visionEffect.end(), 15000);
+      }
+
       let vi = 0;
       for (let i = 0; i < total; i++) {
         vi > positions.length - 1 && (vi = 0);
@@ -2152,7 +2515,7 @@
             y: -8,
             dx: speedsX[vi],
             dy: speedsY[vi],
-            shield: 10 + shieldMultiplier,
+            shield: 10 + levelMultiplier,
           });
         }, i * interval, i, vi);
 
@@ -2172,11 +2535,14 @@
     });
 
     on('next-level', level => {
+      canSpawnBoss = false;
       currentLevel = level;
       virtualLevel++;
       frame = 0;
       firstRun = false;
       levelLastFrame = getLevelLastFrame(level);
+      levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.25) : 0;
+      emit('score', 100);
     });
 
     on('boss-die', () => {
@@ -2198,9 +2564,8 @@
 
     return scene({
       children: [
+        visionEffect,
         starPool,
-        textScore,
-        textLives,
         shipBulletPool,
         enemyBulletPool,
         shipInstance,
@@ -2209,9 +2574,12 @@
         asteroidPool,
         powerupPool,
         explosionPool,
-        progressShield,
+        visionEffectEnd,
         dialogInstance,
+        progressShield,
         levelText,
+        textScore,
+        textLives,
       ],
       gameOver: false,
       update() {
@@ -2361,7 +2729,7 @@
     });
 
     on('explosion', (x, y, volume, magnitude, color) => {
-      zzfx(...[, , 45, .03, .21, .6, 4, .9, 2, -3, , , , .2, , .9, , .45, .26]); // Explosion 39
+      zzfxP(dataAssets['explosion']);
 
       for (let i = 0; i < volume; i++) {
         explosionPool.get({
@@ -2468,23 +2836,39 @@
 
   var song2 = [[[.4, 0, 1e4, , , , , , , , , , .01, 6.8, -.2], [1.4, 0, 84, , , , , .7, , , , .5, , 6.7, 1, .01], [, 0, 60, , .1, , 2], [2, 0, 360, , , .12, 2, 2, , , , , , 9, , .1], [.75, 0, 586, , , .25, 6], [2, 0, 360, , , .375, 2, 3.5], [1.2, 0, 490, , .25, .45, , , , , , , .2, , , , , , , .1], [.75, 0, 386, , , .25, 6]], [[[, -1, 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, ,], [2, -1, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 8, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 8, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20], [, 1, 32, 22, 22, 32, 32, 22, 32, 27, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 27, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 27, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.5, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.5, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.5, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [4, 1, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , 24.75, 20.75, , , , , , , 24.75, 20.75, , , , 21.75, 20.75, , 24.75, 20.75, , , , , , , 24.75, 20.75, , , , 21.75, 20.75]], [[, -1, 8, , , , , , 8, , 8, , , , , , 8, , 6, , , , , , 6, , 6, , , , , , 6, , 13, , , , , , 13, , 13, , , , , , 13, , 8, , , , , , 8, , 8, , , , , , 8, ,], [2, -1, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 6, , 25, 13, 13, 25, 13, , 13, , 25, 13.75, 13, 25, 13, , 25, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [5, 1, 20, 20, 15, , 18, , 13, 15, , 11, , 6, 8, , 18, 20, 11, 11, 13, , 10, , 13, 18, 23, 23, 22, , 18, , 13, , 11, 11, 13, , 25, , 11, 13, 25, 25, 11, , 13, , 6, , 8, , , , , , , , , , , , , , , ,]], [[, -1, 6, , , , , , 6, , 6, , , , , , 6, , 11, , , , , , 11, , 11, , , , , , 11, , 13, , , , , , 13, , 13, , , , , , 13, , 8, , , , , , 8, , 8, , , , , , 8, ,], [2, -1, , 18, 6, 6, 18, 6, , 6, , 18, , 6, 18, 6, , 6, , 23, 11, 11, 23, 11, , 23, , 23, , 11, 23, 11, , 11, , 25, 13, 13, 25, 13, , 13, , 25, 13.75, 13, 25, 13, , 25, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [5, 1, 18, 18, 13, , 11, , 10, 11, , 11, , 13, 10, , 11, 13, 23, 23, 22, , 18, , 13, , 11, 10, , 18, 11, , 11, 18, 11, 11, 13, , 25, , 18, 23, 25, 23, 18, , 23, 23, 18, , 20, , 20, 18, 11, , 6, 8, , , , , , , , ,]], [[, -1, 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, ,], [2, -1, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 8], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.5, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.5], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,]], [[, -1, 11, , , , , , 11, , 11, , , , , , 11, , 11, , , , , , 11, , 11, , , , , , 11, , 16, , , , , , 16, , 16, , , , , , 16, , 16, , , , , , 16, , 16, , , , , , 16, ,], [2, -1, , 23, 11, 11, 23, 11, , 11, , 23, , 11, 23, 11, , 23, , 23, 11, 11, 23, 11, , 11, , 23, , 11, 23, 11, , 11, , 28, 16, 16, 28, 16, , 16, , 28, , 16, 28, 16, , 16, , 28, 16, 16, 28, 16, , 16, , 28, , 16, 28, 16, , 16], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 15, , , , , , , , , , , , , , , , 18, , , , , , , , , , , , 15, 18, 15, 18, 18, , , , 20, , , , , , , , , , , , 23, , , , , , , , , , , , 20, 23, 20, 23]], [[, -1, 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, , 15, , , , , , 15, , 15, , , , , , 15, , 15, , , , , , 15, , 15, , , , , , 15, ,], [2, -1, , 25, 13, 13, 25, 13, , 25, , 25, , 13, 25, 13, , 13, , 25, 13, 13, 25, 13, , 25, , 25, , 13, 25, 13, , 25, , 27, 15, 15, 27, 15, , 27, , 27, , 15, 27, 15, , 15, , 27, 15, 15, 27, 15, , 27, , 27, , 15, 27, 15, , 15], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 25, , , , , , , , , , , , , , , , , , , , , , , , , , , , 20, 23, 25, , 27, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , ,]], [[2, -1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [4, 1, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, , , , , , , , ,], [7, 1, , , , , , , , , , , , , , , , , , , , , , , , , 18, 18, , 18, 13, 13, 10, 10]], [[, -1, 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, ,], [2, -1, , 16, 4, 4, 16, 4, , 16, , 16, , 4, 16, 4, , 16, , 16, 4, 4, 16, 4, , 4, , 16, , 4, 16, 4, , 4, , 25, 13, 13, 25, 13, , 13, , 25, , 13, 25, 13, , 13, , 25, 13, 13, 25, 13, , 25, , 25, , 13, 25, 13, , 13], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 4, , , , , , 11, , , , , , 16, , , , 21, , , , , , 20, , , , , , 20, , , , 11, , , , , , 13, , , , , , 13, , , , 11, , , , , , 13, , , 13, , , 11, 11, 13, 13]], [[, -1, 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, ,], [2, -1, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 8, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 8, , , , , , 18, , , , , , , , , , 11, , , , , , 22, , , , , , , , , , , , , , 18, , , , , , , , , , , , 18, 18, 18, 18, 18, 18, 18, 18, 20, 20, 20, 20, 18, 18, 18, 18]], [[, -1, 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, ,], [2, -1, , 16, 4, 4, 16, 4, , 16, , 16, , 4, 16, 4, , 16, , 16, 4, 4, 16, 4, , 4, , 16, , 4, 16, 4, , 4, , 25, 13, 13, 25, 13, , 13, , 25, , 13, 25, 13, , 13, , 25, 13, 13, 25, 13, , 25, , 25, , 13, 25, 13, , 13], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 4.25, , , , 16, , 16, , , , , , , , 16, , , , 18, , 15, , , , 13, , 11, , , , , , 1, , , , 16, , 16, , , , , , , , 21, , , , 23, , 20, , , , 18, , 16, , 11, , 9, ,]], [[, -1, 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, ,], [2, -1, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 8, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 11, , , , , , 9, , , , , , 8, , , , 16, , , , , , 15, , , , , , 15, , , , 6, , , , , , 13, , , , , , 18, , , , 23, 22.5, 22.5, 22.37, 22.37, 22.5, 22.5, 22.37, 22.37, 22.5, 22.5, 22.37, 22.37, 22.5, 22.5, 22.37]], [[, -1, 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, ,], [2, -1, , 16, 4, 4, 16, 4, , 16, , 16, , 4, 16, 4, , 16, , 16, 4, 4, 16, 4, , 4, , 16, , 4, 16, 4, , 4, , 25, 13, 13, 25, 13, , 13, , 25, , 13, 25, 13, , 13, , 25, 13, 13, 25, 13, , 25, , 25, , 13, 25, 13, , 13], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 4, , , , , , , , , , , , , , , , , 16, 16, 16, 15, 16, 16, 16, 15, 16, 16, 16, 4, , 6, , 8, , , , , , , , , , , , , , , , , 20, 20, 20, 19, 20, 20, 20, 19, 20, 20, 20, 8, , 9, ,]], [[, -1, 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, ,], [2, -1, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 8, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 20, , , , , , 21, , , , , , 20, , , , 16, , , , 15, , 11, , , , 8, , , , , , 6, , , , , , 13, , , , , , 18, , , , 30, , , , , , 25, , 23, , 22, , 18, , 13, ,]], [[, -1, 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 4, , , , , , 4, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, , 13, , , , , , 13, ,], [2, -1, , 16, 4, 4, 16, 4, , 16, , 16, , 4, 16, 4, , 16, , 16, 4, 4, 16, 4, , 4, , 16, , 4, 16, 4, , 4, , 25, 13, 13, 25, 13, , 13, , 25, , 13, 25, 13, , 13, , 25, 13, 13, 25, 13, , 25, , 25, , 13, 25, 13, , 13], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 4.25, , 3, , 4, , 11, , 16, , , , 23, , 20, , 8, , 8.25, , 20, , , , 21, , , , 23, , , , , , , , 23, , , , 21, , , , 20, , 8, 8, 8, 1, 3, , 4, , 8, , 13, , 16, , 20, , 21, ,]], [[, -1, 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 8, , , , , , 8, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, , 6, , , , , , 6, ,], [2, -1, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 20, , 20, 8, 8, 20, 8, , 8, , 20, , 8, 20, 8, , 8, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18, , 18, 6, 6, 18, 6, , 18, , 18, , 6, 18, 6, , 18], [, 1, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32, 32, 22, 22, 32, 32, 22, 32, 22, 32, 22, 22, 32, 32, 22, 32, 32], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,], [6, 1, 11, , , , , , , , , , , , , , , , , 23, 23, 23, 22, 23, 21, , 20, , 15, , 11, , 8, , 6, , , , , , 8, , , , , , 10, , , , 11, , , , , , 13, , , , , , 16, , , ,]], [[4, -1, 15, 15, 15, , 15, , 15, 15, , 15, , 15, 15, , 15, 15, 15, 15, 15, , 15, , 15, 15, 27, 15, , 15, 15, , 15, 15, 15, 15, 15, , 15, , 15, 15, 15, 15, 15, , 15, 15, 15, , 15, , 15, 15, 15, , 15, 15, , , , , , , , ,], [1, -1, 20, , , 20, , , 20, 22.5, 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25, 20, , , 20, , , 20, , 20, , , 20, , , 20, 20.25], [, -1, , 22, 22, , , 22, , , , 22, 22, , , 22, , , , 22, 22, , , 22, , 22, , 22, 22, , , 22, , , , 22, 22, , , 22, , 22, , 22, 22, , , 22, , , , 22, 22, , , 22, , 22, , 22, 22, , , 22, , ,], [3, -1, , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , , , , , , 32, , , ,]]], [0, 1, 2, 3, 2, 4, 5, 6, 1, 2, 3, 7, 10, 9, 8, 13, 12, 11, 14, 4, 5, 15, 6]];
 
+  var explosion = [, , 45, .03, .21, .6, 4, .9, 2, -3, , , , .2, , .9, , .45, .26];
+
+  var shoot = [.9, , 413, , .05, .01, 1, 3.8, -3, -13.4, , , , , , , .11, .65, .07, , 237];
+
+  var typing = [1.5,,261,.01,.02,.08,1,1.5,-0.5,,,-0.5,,,,,.9,.05];
+
+  var powerup = [1.6,,291,.01,.21,.35,,2.2,,,-136,.09,.03,,,.2,.2,.7,.28];
+
+  var shoot2 = [.3,,222,.02,.04,.09,3,.3,11,10,,,,,15,,,.53,.17];
+
+  var hit = [2.3, , 330, , .06, .17, 2, 3.7, , , , , .05, .4, 2, .5, .13, .89, .05, .17];
+
   const ctx = setContext(document.getElementById('c').getContext('2d'));
   ctx.imageSmoothingEnabled = false;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  // ctx.filter = 'url(#remove-alpha)';
 
   (async () => {
     initKeys();
 
     await loadData('song1', zzfxm, song1);
     await loadData('song2', zzfxm, song2);
+    await loadData('explosion', zzfxG, explosion);
+    await loadData('shoot', zzfxG, shoot);
+    await loadData('shoot2', zzfxG, shoot2);
+    await loadData('typing', zzfxG, typing);
+    await loadData('powerup', zzfxG, powerup);
+    await loadData('hit', zzfxG, hit);
     await loadImage('font.png');
     await loadImage('spritesheet.png');
     await loadImage('spritesheet16.png');
 
     function changeScene(scene, props) {
       clearEvents(['change-scene']);
-      // ctx.filter = 'url(#remove-alpha)';
       player.stop();
       switch (scene) {
         case 'game':
