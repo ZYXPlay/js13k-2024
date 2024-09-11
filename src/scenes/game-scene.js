@@ -51,6 +51,7 @@ export default function gameScene() {
   let canSpawnBoss = false;
   let levelLastFrame = getLevelLastFrame(currentLevel);
   let noShieldPowerups = false;
+  let fireTimer;
 
   const explosionPool = pool({
     create: explosionParticle,
@@ -106,6 +107,15 @@ export default function gameScene() {
     text: 'LEVEL 1',
     align: 'center',
     color: 'lightgreen',
+  });
+
+  const fireTimerText = text({
+    x: 256 - 8,
+    y: 240 - 16,
+    text: 'FIRE PODS :00',
+    align: 'right',
+    color: 'gray',
+    ttl: 0,
   });
 
   const progressShield = gameObject({
@@ -388,6 +398,16 @@ export default function gameScene() {
     emit('change-scene', 'game-over', { score: shipInstance.score, previous: hiScore });
   });
 
+  on('start-fire-timer', () => {
+    fireTimer = performance.now() + 30000;
+    fireTimerText.ttl = Infinity;
+  });
+
+  on('end-fire-timer', () => {
+    fireTimer = null;
+    fireTimerText.ttl = 0;
+  });
+
   on('level-13', () => {
     emit('set-dialog', true, [
       'LETS MAKE THIS',
@@ -433,6 +453,7 @@ export default function gameScene() {
       levelText,
       textScore,
       textLives,
+      fireTimerText,
     ],
     gameOver: false,
     update() {
@@ -447,6 +468,8 @@ export default function gameScene() {
         levelText.text = `LEVEL ${virtualLevel + 1}`;
         levelText.ttl = 100;
       }
+
+      fireTimerText.text = `PODS ${fireTimer ? Math.floor((fireTimer - performance.now()) / 1000) : '00'}`;
 
       const totalEnemies = enemyPool.size + asteroidPool.size;
       frame === levelLastFrame && (canSpawnBoss = true);

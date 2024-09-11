@@ -37,7 +37,9 @@ export class Ship extends GameObject {
       this.fireLevel++;
       this.fireLevel > 4 && (this.fireLevel = 4);
       clearTimeout(this.fireTimeout);
+      emit('start-fire-timer');
       this.fireTimeout = delay(() => {
+        emit('end-fire-timer');
         this.fireLevel === 4 && (this.fireLevel = 3);
       }, 30000);
     }
@@ -97,7 +99,7 @@ export class Ship extends GameObject {
     this.y = 248;
     this.frame = 0;
     this.shield = 100;
-    this.fireLevel = 0;
+    this.fireLevel = 3;
     delay(() => {
       this.spawning = false;
       this.imune = false;
