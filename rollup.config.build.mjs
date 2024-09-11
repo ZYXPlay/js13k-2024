@@ -13,11 +13,11 @@ export default [{
   treeshake: true,
   plugins: [
     nodeResolve(),
-    terser(
-      {
-        toplevel: true,
-      },
-    ),
+    // terser(
+    //   {
+    //     toplevel: true,
+    //   },
+    // ),
     copy({
       targets: [
         { src: 'src/index.html', dest: 'build' },
@@ -29,7 +29,7 @@ export default [{
     execute([
       `rm -rf build/game.zip`,
       // `npx google-closure-compiler --js=build/game.js --js_output_file=build/out.js --compilation_level=ADVANCED --language_out=ECMASCRIPT_2021 --warning_level=VERBOSE --jscomp_off=* --assume_function_wrapper`,
-      // `npx uglifyjs build/game.js -c -m -o build/game.js`,
+      `npx uglifyjs build/game.js -c -m -o build/game.js`,
       `node_modules/ect-bin/vendor/macos/ect -9 -zip -strip build/game.zip build/game.js build/index.html build/font.png build/spritesheet.png build/spritesheet16.png`,
       `rm -rf build/out.js`,
     ]),
