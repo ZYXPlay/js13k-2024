@@ -24,12 +24,17 @@ export function loadData(index, fnc, params) {
   dataAssets[index] = fnc(...params);
 }
 
-export function loadImage(url) {
+export function loadImage(url, img = null) {
   addGlobal();
 
   return new Promise((resolve, reject) => {
     let image, fullUrl;
 
+    if (img) {
+      imageAssets[url] = img;
+      return resolve(img);
+    }
+  
     // resolvedUrl = joinPath(imagePath, url);
     if (imageAssets[url])
       return resolve(imageAssets[url]);
