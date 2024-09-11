@@ -6,7 +6,12 @@ import l03 from "./03";
 import l04 from "./04";
 import l05 from "./05";
 import l06 from "./06";
-
+import l07 from "./07";
+import l08 from "./08";
+import l09 from "./09";
+import l10 from "./10";
+import l11 from "./11";
+import l12 from "./12";
 
 const levels = [
   l01,
@@ -15,6 +20,12 @@ const levels = [
   l04,
   l05,
   l06,
+  l07,
+  l08,
+  l09,
+  l10,
+  l11,
+  l12,
 ];
 
 function parseEnemy(data) {
