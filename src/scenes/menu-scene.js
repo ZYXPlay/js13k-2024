@@ -4,6 +4,8 @@ import { onKey, offKey } from "../engine/keyboard";
 import { emit } from "../engine/events";
 import { delay } from "../engine/utils";
 import { text } from "../engine/text";
+// import { gameObject } from "../engine/game-object";
+// import { imageAssets } from "../engine/assets";
 
 export default function menuScene() {
   onKey(['enter'], () => {
@@ -11,6 +13,19 @@ export default function menuScene() {
   });
   offKey(['esc']);
   const starPool = starfield(20);
+
+  // const title = gameObject({
+  //   x: 128,
+  //   y: 48,
+  //   anchor: { x: 0.5, y: 0.5 },
+  //   width: 256,
+  //   height: 100,
+  //   image: imageAssets['title.png'],
+  //   draw() {
+  //     const { context: ctx } = this;
+  //     ctx.drawImage(this.image, 0, 0);
+  //   },
+  // });
 
   const titleText = text({
     x: 128,
