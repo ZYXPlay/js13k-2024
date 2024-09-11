@@ -43,12 +43,14 @@ export default function gameScene() {
   const shipInstance = ship({ x: 120, y: 248 });
   const starPool = starfield(20);
   const dialogInstance = dialog();
+  const blockingDialogInstance = dialog();
   let currentLevel = 0, virtualLevel = 0;
   let levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.5) : 0;
   let frame = 0;
   let firstRun = true;
   let canSpawnBoss = false;
   let levelLastFrame = getLevelLastFrame(currentLevel);
+  let noShieldPowerups = false;
 
   const explosionPool = pool({
     create: explosionParticle,
@@ -126,27 +128,30 @@ export default function gameScene() {
   });
 
   const visionEffect = gameObject({
-    x: 0, y: 0, active: false, radius: 256,
-    update() {},
+    x: 0, y: 0, active: false, radius: 384,
+    update() { },
     draw() {
       const { context: ctx } = this;
       ctx.save();
-      // if (this.active) {
-        ctx.beginPath();
-        ctx.arc(shipInstance.x, shipInstance.y, this.radius, 0, Math.PI * 2, true);
-        ctx.clip();
-      // }
+      ctx.beginPath();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 3;
+      ctx.arc(shipInstance.x, shipInstance.y, this.radius, 0, Math.PI * 2, true);
+      ctx.clip();
+      ctx.stroke();
     },
     start() {
-      this.radius = 256;
+      zzfxP(dataAssets['transition']);
+      this.radius = 384;
       this.active = true;
     },
     end() {
+      zzfxP(dataAssets['transition']);
       this.active = false;
     },
     update() {
-      this.active && this.radius > 60 && (this.radius -= 1);
-      !this.active && this.radius < 256 && (this.radius += 1);
+      this.active && this.radius > 60 && (this.radius -= 2);
+      !this.active && this.radius < 384 && (this.radius += 1);
       this.advance();
     },
     render() {
@@ -156,7 +161,7 @@ export default function gameScene() {
 
   const visionEffectEnd = gameObject({
     x: 0, y: 0,
-    update() {},
+    update() { },
     draw() {
       const { context: ctx } = this;
       ctx.restore();
@@ -339,14 +344,22 @@ export default function gameScene() {
   });
 
   on('spawn-powerup', (type, x, dy) => {
+    if (type === 'shield' && noShieldPowerups) return;
     powerupPool.get({ type, x, y: -8, dy });
   });
 
   on('set-dialog', (pauseOnTalk, texts) => {
-    dialogInstance.start({
-      texts,
-      pauseOnTalk,
-    });
+    if (pauseOnTalk) {
+      blockingDialogInstance.start({
+        texts,
+        pauseOnTalk: true,
+      });  
+    } else {
+      dialogInstance.start({
+        texts,
+        pauseOnTalk: false,
+      });  
+    }
   });
 
   on('next-level', level => {
@@ -358,6 +371,8 @@ export default function gameScene() {
     levelLastFrame = getLevelLastFrame(level);
     levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.25) : 0;
     emit('score', 100);
+    if (virtualLevel === 12) emit('level-13');
+    if (virtualLevel === 25) emit('level-26');
   });
 
   on('boss-die', () => {
@@ -372,6 +387,28 @@ export default function gameScene() {
     shipInstance.score > hiScore && localStorage.setItem('hiScore', shipInstance.score);
     emit('change-scene', 'game-over', { score: shipInstance.score, previous: hiScore });
   });
+
+  on('level-13', () => {
+    emit('set-dialog', true, [
+      'LETS MAKE THIS',
+      'INSTERESTING.',
+      'NOW WITH ONE LIFE ONLY',
+    ]);
+    shipInstance.lives = 1;
+    shipInstance.shield = 100;
+  });
+
+  on('level-26', () => {
+    emit('set-dialog', true, [
+      'HEY! YOU ARE GOOD AT THIS!',
+      'NOW ONE HIT AND YOU DIE!',
+      'AND NO SHIELD POWERUPS.'
+    ]);
+    shipInstance.lives = 1;
+    shipInstance.shield = 10;
+    noShieldPowerups = true;
+  });
+
 
   const qtShipBullets = quadtree();
   const qtShip = quadtree();
@@ -391,6 +428,7 @@ export default function gameScene() {
       explosionPool,
       visionEffectEnd,
       dialogInstance,
+      blockingDialogInstance,
       progressShield,
       levelText,
       textScore,
@@ -399,8 +437,8 @@ export default function gameScene() {
     gameOver: false,
     update() {
       this.paused = false;
-      if (dialogInstance.isTalking && dialogInstance.pauseOnTalk) {
-        dialogInstance.update();
+      if (blockingDialogInstance.isTalking && blockingDialogInstance.pauseOnTalk) {
+        blockingDialogInstance.update();
         this.paused = true;
         return;
       }
