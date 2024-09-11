@@ -18,6 +18,7 @@ export class Ship extends GameObject {
       score: 0,
       fireLevel: 0,
       firing: false,
+      fireTimeout: null,
       anchor: { x: .5, y: .5 },
       sprite: 1,
       ...props,
@@ -34,7 +35,11 @@ export class Ship extends GameObject {
 
     if (powerup.type === 'fire') {
       this.fireLevel++;
-      this.fireLevel > 3 && (this.fireLevel = 3);
+      this.fireLevel > 4 && (this.fireLevel = 4);
+      clearTimeout(this.fireTimeout);
+      this.fireTimeout = delay(() => {
+        this.fireLevel === 4 && (this.fireLevel = 3);
+      }, 30000);
     }
   }
   fire() {
@@ -58,6 +63,13 @@ export class Ship extends GameObject {
         emit('ship-fire', this.x - 1, this.y - 8, -2);
         emit('ship-fire', this.x - 1, this.y - 8, 2);
       }, 400);
+    }
+
+    if (this.fireLevel  > 3) {
+      delay(() => {
+        emit('ship-fire', this.x - 16, this.y - 4, rnd(-.1, .1));
+        emit('ship-fire', this.x + 14, this.y - 4, rnd(-.1, .1));
+      }, 200);
     }
 
     delay(() => {
@@ -137,9 +149,15 @@ export class Ship extends GameObject {
     ctx.fillStyle = '#FF6633';
     ctx.fillRect(this.frame % 10 < 5 ? 3 : 4, 7 + boost, 1, boost);
 
+    if (this.fireLevel === 4) {
+      ctx.fillStyle = '#FFF';
+      ctx.fillRect(18, 4, 2, 2);
+      ctx.fillRect(-12, 4, 2, 2);
+    }
+
     if (this.hitted) {
       ctx.globalCompositeOperation = "source-atop";
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = 'red';
       ctx.fillRect(0, 0, width, height);
       ctx.globalCompositeOperation = "source-over";
     }
