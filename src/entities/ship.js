@@ -36,12 +36,14 @@ export class Ship extends GameObject {
     if (powerup.type === 'fire') {
       this.fireLevel++;
       this.fireLevel > 4 && (this.fireLevel = 4);
-      clearTimeout(this.fireTimeout);
-      emit('start-fire-timer');
-      this.fireTimeout = delay(() => {
-        emit('end-fire-timer');
-        this.fireLevel === 4 && (this.fireLevel = 3);
-      }, 30000);
+      if (this.fireLevel === 4) {
+        clearTimeout(this.fireTimeout);
+        emit('start-fire-timer');
+        this.fireTimeout = delay(() => {
+          emit('end-fire-timer');
+          this.fireLevel === 4 && (this.fireLevel = 3);
+        }, 30000);
+      }
     }
   }
   fire() {
@@ -60,14 +62,14 @@ export class Ship extends GameObject {
       }, 100);
     }
 
-    if (this.fireLevel  > 2) {
+    if (this.fireLevel > 2) {
       delay(() => {
         emit('ship-fire', this.x - 1, this.y - 8, -2);
         emit('ship-fire', this.x - 1, this.y - 8, 2);
       }, 400);
     }
 
-    if (this.fireLevel  > 3) {
+    if (this.fireLevel > 3) {
       delay(() => {
         emit('ship-fire', this.x - 16, this.y - 4, rnd(-.1, .1));
         emit('ship-fire', this.x + 14, this.y - 4, rnd(-.1, .1));
@@ -99,7 +101,7 @@ export class Ship extends GameObject {
     this.y = 248;
     this.frame = 0;
     this.shield = 100;
-    this.fireLevel = 3;
+    this.fireLevel = 0;
     delay(() => {
       this.spawning = false;
       this.imune = false;

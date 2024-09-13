@@ -7,7 +7,7 @@ export class Asteroid extends GameObject {
     const properties = {
       name: 'asteroid',
       spritesheet: [imageAssets['spritesheet16.png'], 16, 16],
-      sprite: 2,
+      sprite: 1,
       width: 16,
       height: 16,
       color: null,

@@ -45,7 +45,7 @@ export default function gameScene() {
   const dialogInstance = dialog();
   const blockingDialogInstance = dialog();
   let currentLevel = 0, virtualLevel = 0;
-  let levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.5) : 0;
+  let levelMultiplier = virtualLevel > 12 ? Math.floor(virtualLevel * 0.25) : 0;
   let frame = 0;
   let firstRun = true;
   let canSpawnBoss = false;
@@ -94,6 +94,14 @@ export default function gameScene() {
     y: 8,
   });
 
+  const textHi = text({
+    text: `HI ${localStorage.getItem('hiScore') || 0}`,
+    x: 128,
+    y: 8,
+    color: 'gray',
+    align: 'center',
+  });
+
   const textLives = text({
     x: 256 - 8 - 8 * 3,
     y: 8,
@@ -107,6 +115,7 @@ export default function gameScene() {
     text: 'LEVEL 1',
     align: 'center',
     color: 'lightgreen',
+    ttl: 0,
   });
 
   const fireTimerText = text({
@@ -220,7 +229,7 @@ export default function gameScene() {
       dy: -4,
       dx,
       color: null,
-      sprite: 17,
+      sprite: 16,
       ttl: 100,
       update() {
         this.advance();
@@ -314,6 +323,10 @@ export default function gameScene() {
   });
 
   on('spawn-enemy', (total, interval, props) => {
+    if (total === 13) {
+      visionEffect.start();
+      delay(() => visionEffect.end(), 15000);
+    }
     total = total + levelMultiplier;
     for (let i = 0; i < total; i++) {
       const angle = i * (360 / total);
@@ -379,7 +392,7 @@ export default function gameScene() {
     frame = 0;
     firstRun = false;
     levelLastFrame = getLevelLastFrame(level);
-    levelMultiplier = virtualLevel > 3 ? Math.floor(virtualLevel * 0.25) : 0;
+    levelMultiplier = virtualLevel > 12 ? Math.floor(virtualLevel * 0.25) : 0;
     emit('score', 100);
     if (virtualLevel === 12) emit('level-13');
     if (virtualLevel === 25) emit('level-26');
@@ -452,6 +465,7 @@ export default function gameScene() {
       progressShield,
       levelText,
       textScore,
+      textHi,
       textLives,
       fireTimerText,
     ],
@@ -464,10 +478,10 @@ export default function gameScene() {
         return;
       }
 
-      if (frame < 40) {
-        levelText.text = `LEVEL ${virtualLevel + 1}`;
-        levelText.ttl = 100;
-      }
+      // if (frame < 40) {
+      //   levelText.text = `LEVEL ${virtualLevel + 1}`;
+      //   levelText.ttl = 100;
+      // }
 
       fireTimerText.text = `PODS ${fireTimer ? Math.floor((fireTimer - performance.now()) / 1000) : '00'}`;
 

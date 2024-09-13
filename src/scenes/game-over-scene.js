@@ -100,7 +100,7 @@ export default function gameOverScene(
 
   delay(() => {
     s.add(titleText);
-    emit('explosion', 128, 48, 100, 6, 'red');
+    // emit('explosion', 128, 48, 100, 6, 'red');
   }, 1000);
 
   delay(() => {

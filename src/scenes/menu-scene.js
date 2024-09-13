@@ -29,8 +29,8 @@ export default function menuScene() {
 
   const titleText = text({
     x: 128,
-    y: 32,
-    text: 'MICRO SHOOTER',
+    y: 24,
+    text: 'BLIND FEAR',
     align: 'center',
     color: 'red',
     scaleX: 2,
@@ -39,10 +39,18 @@ export default function menuScene() {
 
   const editionText = text({
     x: 128,
-    y: 88,
+    y: 64,
     text: 'JS13K 2024 EDITION',
     align: 'center',
     color: 'yellow',
+  });
+
+  const hiscoreText = text({
+    x: 128,
+    y: 96,
+    text: 'HI SCORE: 0',
+    align: 'center',
+    color: 'green',
   });
 
   const gameByText = text({
@@ -70,6 +78,8 @@ export default function menuScene() {
     align: 'center',
   });
 
+  hiscoreText.text = `HIGH SCORE: ${localStorage.getItem('hiscore') || 0}`;
+
   const s = scene({
     frame: 0,
     children: [
@@ -89,6 +99,10 @@ export default function menuScene() {
   delay(() => {
     s.add(editionText);
   }, 2000);
+
+  delay(() => {
+    s.add(hiscoreText);
+  }, 2500);
 
   delay(() => {
     s.add(gameByText);

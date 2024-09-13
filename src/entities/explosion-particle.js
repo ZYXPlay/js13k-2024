@@ -18,7 +18,7 @@ export class ExplosionParticle extends GameObject {
   draw() {
     !this.color && this.context.drawImage(
       this.spritesheet[0],
-      16 * 8, 0, 8, 8,
+      120, 0, 8, 8,
       0, 0, 8, 8
     );
 
