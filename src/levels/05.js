@@ -2,7 +2,7 @@ import { getPath } from "../paths";
 export default [
   { // enemies
     2500: [
-      13, // total
+      14, // total
       200, // interval
       5, // sprite
       true, // rotate

@@ -1,30 +1,6 @@
 import { getPath } from "../paths";
 export default [
   { // enemies
-    500: [
-      10, // total
-      400, // interval
-      3, // sprite
-      false, // rotate
-      false, // loop
-      2, // shield
-      0, // fire mode
-      200, // fire rate
-      getPath('zzLeft'), // path
-      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-    ],
-    800: [
-      10, // total
-      400, // interval
-      4, // sprite
-      false, // rotate
-      false, // loop
-      2, // shield
-      0, // fire mode
-      200, // fire rate
-      getPath('zzRight'), // path
-      // 'M287 13-21 61l293 46-293 31 293 48-290 52', // path
-    ],
     1500: [
       10, // total
       400, // interval
@@ -67,16 +43,27 @@ export default [
   { // powerups
     1500: [
       'fire', // type
-      128, // x
+      64, // x
       .6, // velocity
+    ],
+    1500: [
+      'shield', // type
+      156, // x
+      .4, // velocity
     ],
   },
   { // dialogs
     100: [
       false, // pause gameplay
       [
-        'HMMM... ZIGZAGERS?',
-        '    ',
+        'I GOT A FEELING',
+        'THIS NEVER ENDS',
+        '       ',
+        'MAYBE THAT IS WHY',
+        'IT IS A GAME.',
+        '       ',
+        'OH WELL, LETS KEEP GOING.',
+        'BUT HARDER THIS TIME. HEHE!',
       ], // texts
     ],
   },

@@ -15,9 +15,9 @@ export default [
     ],
   },
   { // asteroids
-    1000: [
-      13, // total
-      1000, // interval ms
+    10: [
+      60, // total
+      400, // interval ms
       [20, 200, 120, 180, 60, 220, 180, 40, 120, 60], // x positions
       [0, -.1, 0, -.1, .1, -.1, 0, .1, 0, .1], // dx speeds
       [1, .5, .7, .5, .9, .5, 1, .8, .4, .7], // dy speeds
@@ -31,15 +31,10 @@ export default [
     ],
   },
   { // dialogs
-    100: [
+    3000: [
       false, // pause gameplay
       [
-        'HERE COME MORE ASTEROIDS',
-        '12 PLUS 1, HEHE!',
-        '         ',
-        'ALSO 13 SHIPS',
-        '        ',
-        'OH MAN! NOT AGAIN!',
+        'CONTROL YOURSELF, CAPTAIN!',
       ], // texts
     ],
   },
