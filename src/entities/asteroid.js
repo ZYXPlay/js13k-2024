@@ -1,6 +1,7 @@
 import { imageAssets } from "../engine/assets";
 import { emit } from "../engine/events";
 import { GameObject } from "../engine/game-object";
+import { cw, ch } from "../globals";
 
 export class Asteroid extends GameObject {
   init(props) {
@@ -25,7 +26,7 @@ export class Asteroid extends GameObject {
   update() {
     this.rotation = this.frame / (10 / this.dy);
     this.advance();
-    this.x < 0 || this.x > 264 || this.y > 248 && (this.ttl = 0);
+    this.x < 0 || this.x > cw + 8 || this.y > ch + 8 && (this.ttl = 0);
   }
 }
 

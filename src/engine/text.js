@@ -15,6 +15,8 @@ export class Text extends GameObject {
       spritesheet: imageAssets['font.png'],
       ...props,
     };
+    const fontName = properties.color ? `font-${properties.color}.png` : 'font.png';
+    properties.spritesheet = imageAssets[fontName];
     super(properties);
   }
   draw() {
@@ -51,20 +53,17 @@ export class Text extends GameObject {
           continue;
         }
 
-        const sx = index * charWidth,
+        const 
+          sx = index * (charWidth + 1),
           sy = 0,
-          sw = charWidth,
-          sh = charHeight,
+          sw = charWidth + 1,
+          sh = charHeight + 1,
           dx = i * charWidth,
           dy = 0,
-          dw = charWidth,
-          dh = charHeight;
+          dw = charWidth + 1,
+          dh = charHeight + 1;
 
         context.drawImage(this.spritesheet, sx, sy, sw, sh, dx, dy, dw, dh);
-        context.globalCompositeOperation = "source-atop";
-        context.fillStyle = color || "white";
-        context.fillRect(dx, 0, charWidth, charHeight);
-        context.globalCompositeOperation = "source-over";
       }
 
       context.restore();

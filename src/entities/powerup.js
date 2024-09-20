@@ -11,7 +11,7 @@ export class Powerup extends GameObject {
       taken: false,
       // ttl: 600,
       anchor: { x: .5, y: .5 },
-      spritesheet: [imageAssets['font.png'], 8, 8],
+      spritesheet: [imageAssets['font-white.png'], 8, 8],
       ...props,
     });
   }

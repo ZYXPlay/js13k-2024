@@ -11,6 +11,10 @@ export default [{
     format: 'cjs',
     sourcemap: true,
   },
+  external: [
+    'BassoonTracker',
+    'BassoonTracker.init',
+  ],
   treeshake: true,
   plugins: [
     nodeResolve(),
@@ -20,6 +24,10 @@ export default [{
         { src: 'assets/font.png', dest: 'build' },
         { src: 'assets/spritesheet.png', dest: 'build' },
         { src: 'assets/spritesheet16.png', dest: 'build' },
+        { src: 'src/lib/b-zip.js', dest: 'build' },
+        { src: 'assets/m_newhor.mod', dest: 'build', rename: 'menu.mod' },
+        { src: 'assets/dubmood_zabutom-track_tracking_compo_edit.xm', dest: 'build', rename: 'music.xm' },
+        { src: 'assets/m_farewl.mod', dest: 'build', rename: 'game-over.mod' },
       ],
     }),
     execute([

@@ -2,12 +2,13 @@ import { scene } from "../engine/scene";
 import starfield from "../entities/starfield";
 import { onKey } from "../engine/keyboard";
 import { emit, on } from "../engine/events";
-import { delay, rnd } from "../engine/utils";
+import { clamp, delay, rnd } from "../engine/utils";
 import { text } from "../engine/text";
 import { pool } from "../engine/pool";
 import { explosionParticle } from "../entities/explosion-particle";
 import { zzfxP } from "../engine/zzfx";
-import { dataAssets } from "../engine/assets";
+import { dataAssets, imageAssets } from "../engine/assets";
+import { gameObject } from "../engine/game-object";
 
 export default function gameOverScene(
   {
@@ -41,6 +42,27 @@ export default function gameOverScene(
     maxSize: 400,
   });
 
+  const title = gameObject({
+    x: 128,
+    y: 48,
+    anchor: { x: 0.5, y: 0.5 },
+    width: 256,
+    height: 100,
+    scaleX: 0.01,
+    scaleY: 0.01,
+    image: imageAssets['gameover.png'],
+    update() {
+      // this.scaleX = this.scaleY = 0.95 + Math.sin(this.frame / 10) * 0.05;
+      this.scaleX = this.scaleY = clamp(0, 1, this.frame / 200);
+      this.advance();
+    },
+    draw() {
+      if (this.frame < 2) return;
+      const { context: ctx } = this;
+      ctx.drawImage(this.image, 0, 0);
+    },
+  });
+
   const titleText = text({
     x: 128,
     y: 32,
@@ -53,7 +75,7 @@ export default function gameOverScene(
 
   const scoreLabelText = text({
     x: 128,
-    y: 80,
+    y: 128,
     text: 'YOUR SCORE:',
     color: 'white',
     align: 'center',
@@ -61,7 +83,7 @@ export default function gameOverScene(
 
   const scoreText = text({
     x: 128,
-    y: 96,
+    y: 144,
     text: `${score}`,
     color: 'white',
     align: 'center',
@@ -71,7 +93,7 @@ export default function gameOverScene(
 
   const hiscoreText = text({
     x: 128,
-    y: 128,
+    y: 180,
     text: 'NEW HIGH SCORE!',
     color: 'yellow',
     align: 'center',
@@ -99,7 +121,7 @@ export default function gameOverScene(
   });
 
   delay(() => {
-    s.add(titleText);
+    s.add(title);
     // emit('explosion', 128, 48, 100, 6, 'red');
   }, 1000);
 
@@ -114,7 +136,7 @@ export default function gameOverScene(
   if (score > previous) {
     delay(() => {
       s.add(hiscoreText);
-      emit('explosion', 128, 132, 60, 4, 'yellow');
+      emit('explosion', 128, 180, 60, 4, 'yellow');
     }, 3000);
   }
 

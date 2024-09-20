@@ -37,9 +37,6 @@ export default function gameScene() {
   offKey(['enter']);
   onKey(['enter'], () => dialogInstance.skip());
 
-  player.set('song1');
-  player.start();
-
   const shipInstance = ship({ x: 120, y: 248 });
   const starPool = starfield(20);
   const dialogInstance = dialog();
@@ -147,7 +144,7 @@ export default function gameScene() {
   });
 
   const visionEffect = gameObject({
-    x: 0, y: 0, active: false, radius: 384,
+    x: 0, y: 0, active: false, radius: 484,
     update() { },
     draw() {
       const { context: ctx } = this;
@@ -161,7 +158,7 @@ export default function gameScene() {
     },
     start() {
       zzfxP(dataAssets['transition']);
-      this.radius = 384;
+      this.radius = 484;
       this.active = true;
     },
     end() {
@@ -170,7 +167,7 @@ export default function gameScene() {
     },
     update() {
       this.active && this.radius > 60 && (this.radius -= 2);
-      !this.active && this.radius < 384 && (this.radius += 1);
+      !this.active && this.radius < 484 && (this.radius += 1);
       this.advance();
     },
     render() {
@@ -194,8 +191,9 @@ export default function gameScene() {
     zzfxP(dataAssets['hit']);
   });
 
-  on('explosion', (x, y, volume, magnitude, color) => {
-    zzfxP(dataAssets['explosion']);
+  on('explosion', (x, y, volume, magnitude, color, big = false) => {
+    const explosionSound = big ? 'bigExplosion' : 'explosion';
+    zzfxP(dataAssets[explosionSound]);
 
     for (let i = 0; i < volume; i++) {
       i % 2 == 0 && explosionPool.get({
@@ -254,10 +252,17 @@ export default function gameScene() {
       y: y + 4,
       dx: vx / dist,
       dy: vy / dist,
-      width: 2,
-      height: 2,
+      width: 3,
+      height: 3,
       color: 'red',
       ttl: 300,
+      draw() {
+        const { context: ctx } = this;
+        ctx.fillStyle = this.color;
+        ctx.fillRect(0, 0, this.width, this.height);
+        ctx.fillStyle = 'white';
+        ctx.fillRect(1, 1, 1, 1);
+      }
     });
   });
 
@@ -273,8 +278,8 @@ export default function gameScene() {
         y: y,
         dx,
         dy,
-        width: 2,
-        height: 2,
+        width: 3,
+        height: 3,
         color: 'red',
         ttl: 400,
       });
@@ -522,6 +527,7 @@ export default function gameScene() {
       textLives.text = `@@@`.slice(0, shipInstance.lives);
 
       firstRun && frame > 40 && frame < 140 && frame % 20 === 0 && starPool.decreaseVel(2);
+      firstRun && frame === 0 && zzfxP(dataAssets['engineSlowdown']);
       frame++;
     },
   });
