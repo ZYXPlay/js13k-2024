@@ -1,9 +1,10 @@
-import { dataAssets } from "../engine/assets";
+import { dataAssets, imageAssets } from "../engine/assets";
 import { emit } from "../engine/events";
 import { GameObject } from "../engine/game-object";
 import { keyPressed } from "../engine/keyboard";
 import { clamp, delay, rnd } from "../engine/utils";
 import { zzfxP } from "../engine/zzfx";
+import { ch, cw } from "../globals";
 
 export class Ship extends GameObject {
   init(props) {
@@ -11,6 +12,9 @@ export class Ship extends GameObject {
       name: 'ship',
       spawning: true,
       y: 248,
+      spritesheet: [imageAssets['spritesheet16.png'], 16, 16],
+      width: 16,
+      height: 16,
       imune: false,
       dying: false,
       shield: 100,
@@ -82,7 +86,7 @@ export class Ship extends GameObject {
   }
   die() {
     emit('ship-die');
-    emit('explosion', this.x, this.y - 4, 60, 4, 'white');
+    emit('explosion', this.x, this.y - 4, 60, 4, 'white', true);
     this.dying = true;
     this.ttl = 0;
     this.lives--;
@@ -98,7 +102,7 @@ export class Ship extends GameObject {
     this.imune = true;
     this.spawning = true;
     this.ttl = Infinity;
-    this.y = 248;
+    this.y = ch - 16;
     this.frame = 0;
     this.shield = 100;
     this.fireLevel = 0;
@@ -108,7 +112,7 @@ export class Ship extends GameObject {
     }, 1000);
   }
   update() {
-    const friction = .96;
+    const friction = .91;
 
     this.ddx = 0;
     this.ddy = 0;
@@ -116,20 +120,20 @@ export class Ship extends GameObject {
     this.dx *= friction;
     this.dy *= friction;
 
-    this.sprite = 1;
+    this.sprite = 2;
 
-    keyPressed(['d', 'arrowright']) && this.dx < 5 && (this.ddx = .2, this.sprite = 2);
-    keyPressed(['a', 'arrowleft']) && this.dx > -5 && (this.ddx = -.2, this.sprite = 0);
+    keyPressed(['d', 'arrowright']) && this.dx < 3 && (this.ddx = .3, this.sprite = 3);
+    keyPressed(['a', 'arrowleft']) && this.dx > -3 && (this.ddx = -.3, this.sprite = 4);
 
     if (!this.spawning) {
-      keyPressed(['s', 'arrowdown']) && this.dy < 5 && (this.ddy = .2);
-      keyPressed(['w', 'arrowup']) && this.dy > -5 && (this.ddy = -.2);
+      keyPressed(['s', 'arrowdown']) && this.dy < 3 && (this.ddy = .3);
+      keyPressed(['w', 'arrowup']) && this.dy > -3 && (this.ddy = -.3);
     }
 
     !this.firing && keyPressed('space') && this.fire();
 
     if (this.spawning) {
-      this.ddy = -.03;
+      this.ddy = -.2;
       this.scaleX = this.scaleY = clamp(1, 2, 2 - this.frame / 60);
     }
 
@@ -138,9 +142,9 @@ export class Ship extends GameObject {
     this.advance();
 
     this.x < 4 && (this.x = 4, this.dx = 0);
-    this.x > 252 && (this.x = 252, this.dx = 0);
+    this.x > cw - 4 && (this.x = cw - 4, this.dx = 0);
     this.y < 4 && (this.y = 4, this.dy = 0);
-    this.y > 236 && (this.y = 236, this.dy = 0);
+    this.y > ch - 4 && (this.y = ch - 4, this.dy = 0);
   }
   draw() {
     const { context: ctx, x, y, width, height } = this;
@@ -155,8 +159,8 @@ export class Ship extends GameObject {
 
     if (this.fireLevel === 4) {
       ctx.fillStyle = '#FFF';
-      ctx.fillRect(18, 4, 2, 2);
-      ctx.fillRect(-12, 4, 2, 2);
+      ctx.fillRect( 22, 4, 2, 2);
+      ctx.fillRect(-8, 4, 2, 2);
     }
 
     if (this.hitted) {

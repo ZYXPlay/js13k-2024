@@ -24,7 +24,7 @@ export class ExplosionParticle extends GameObject {
 
     this.color && (
       this.context.fillStyle = this.color,
-      this.context.fillRect(0, 0, 1, 1)
+      this.context.fillRect(0, 0, 2, 2)
     );
   }
 }

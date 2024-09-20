@@ -41,7 +41,7 @@ export class Boss extends Enemy {
     delay(() => {this.firing = false; this.imune = true;}, 1600);
   }
   die() {
-    emit('explosion', this.x, this.y, 30, 3, this.debryColor);
+    emit('explosion', this.x, this.y, 70, 6, this.debryColor, true);
     emit('score', 10);
     this.ttl = 0;
     this.timers.map(timer => clearTimeout(timer));

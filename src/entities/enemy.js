@@ -27,7 +27,7 @@ export class Enemy extends GameObject {
     emit('enemy-fire', this.x - 4, this.y - 4, this.rotation, 3);
   }
   die() {
-    emit('explosion', this.x, this.y, 30, 3, this.debryColor);
+    emit('explosion', this.x, this.y, 20, 3, this.debryColor);
     emit('score', 10);
     this.ttl = 0;
   }
