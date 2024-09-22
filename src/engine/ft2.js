@@ -162,6 +162,7 @@ Fasttracker.prototype.clearsong = function()
 // initialize all player variables to defaults prior to starting playback
 Fasttracker.prototype.initialize = function()
 {
+  var i;
   this.syncqueue=[];
 
   this.tick=-1;
