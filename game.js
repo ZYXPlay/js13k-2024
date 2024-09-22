@@ -614,7 +614,7 @@ const zzfxR=44100;
 const zzfxX=new(window.AudioContext||webkitAudioContext);
 
 const cw = 256;
-const ch$1 = 240;
+const ch = 240;
 
 class Ship extends GameObject {
   init(props) {
@@ -752,7 +752,7 @@ class Ship extends GameObject {
     this.imune = true;
     this.spawning = true;
     this.ttl = Infinity;
-    this.y = ch$1 + 32;
+    this.y = ch + 32;
     this.frame = 0;
     this.shield = 100;
     this.fireLevel = 0;
@@ -796,7 +796,7 @@ class Ship extends GameObject {
     this.x < 4 && (this.x = 4, this.dx = 0);
     this.x > cw - 4 && (this.x = cw - 4, this.dx = 0);
     this.y < 4 && (this.y = 4, this.dy = 0);
-    this.y > ch$1 - 4 && (this.y = ch$1 - 4, this.dy = 0);
+    this.y > ch - 4 && (this.y = ch - 4, this.dy = 0);
   }
   draw() {
     const { context: ctx, x, y, width, height } = this;
@@ -1022,7 +1022,7 @@ function starfield(vel = 1) {
 
   starPool.velocity = vel;
 
-  for (let i = -10; i < ch$1; i++) {
+  for (let i = -10; i < ch; i++) {
     const velocity = rnd(1, 3) * vel;
     const color = Math.floor((velocity / vel) * 50) + 50;
     i % 2 == 0 && starPool.get(
@@ -1035,7 +1035,7 @@ function starfield(vel = 1) {
         color: `rgb(${color}, ${color}, ${color})`,
         update() {
           this.advance();
-          if (this.y > ch$1) {
+          if (this.y > ch) {
             this.y = -10;
           }
           this.height = 1 + (this.dy / 4);
@@ -1071,7 +1071,7 @@ class Asteroid extends GameObject {
   update() {
     this.rotation = this.frame / (10 / this.dy);
     this.advance();
-    this.x < 0 || this.x > cw + 8 || this.y > ch$1 + 8 && (this.ttl = 0);
+    this.x < 0 || this.x > cw + 8 || this.y > ch + 8 && (this.ttl = 0);
   }
 }
 
@@ -4390,7 +4390,7 @@ Fasttracker.prototype.initialize = function()
 // parse the module from local buffer
 Fasttracker.prototype.parse = function(buffer)
 {
-  var i, j, k, c, offset, datalen, hdrlen;
+  var i, j, k, c, offset, datalen, hdrlen, row, ch;
 
   if (!buffer) return false;
 
