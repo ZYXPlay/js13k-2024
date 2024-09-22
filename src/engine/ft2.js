@@ -245,7 +245,7 @@ Fasttracker.prototype.initialize = function()
 // parse the module from local buffer
 Fasttracker.prototype.parse = function(buffer)
 {
-  var i, j, k, c, offset, datalen, hdrlen;
+  var i, j, k, c, offset, datalen, hdrlen, row, ch;
 
   if (!buffer) return false;
 
