@@ -33,11 +33,15 @@ export class Ship extends GameObject {
   powerUp(powerup) {
     zzfxP(dataAssets['powerup']);
     if (powerup.type === 'shield') {
-      this.shield += 50;
+      this.shield += 100;
       this.shield > 100 && (this.shield = 100);
     }
 
-    if (powerup.type === 'fire') {
+    const previousType = this.fireType;
+
+    if (powerup.type === 'fire' || powerup.type === 'laser') {
+      this.fireType = powerup.type === 'fire' ? 0 : 1;
+      this.fireType !== previousType && (this.fireLevel = 0);
       this.fireLevel++;
       this.fireLevel > 4 && (this.fireLevel = 4);
       if (this.fireLevel === 4) {
@@ -84,6 +88,42 @@ export class Ship extends GameObject {
       this.firing = false;
     }, 200);
   }
+  fire2() {
+    if (this.firing) return;
+    this.firing = true;
+    let repeat = 200;
+    emit('ship-fire-laser', this.x - 1, this.y - 16, 0);
+
+    if (this.fireLevel > 0) {
+      delay(() => {
+        emit('ship-fire-laser', this.x - 6, this.y - 10, 0);
+      }, 20);
+      delay(() => {
+        emit('ship-fire-laser', this.x + 5, this.y - 10, 0);
+      }, 40);
+    }
+
+    if (this.fireLevel > 1) {
+      repeat = 150;
+    }
+
+    if (this.fireLevel > 2) {
+      repeat = 100;
+    }
+
+    if (this.fireLevel > 3) {
+      delay(() => {
+        emit('ship-fire-laser', this.x - 16, this.y - 16, 0);
+      }, 60);
+      delay(() => {
+        emit('ship-fire-laser', this.x + 14, this.y - 16, 0);
+      }, 80);
+    }
+
+    delay(() => {
+      this.firing = false;
+    }, repeat);
+  }
   die() {
     emit('ship-die');
     emit('explosion', this.x, this.y - 4, 60, 4, 'white', true);
@@ -102,10 +142,11 @@ export class Ship extends GameObject {
     this.imune = true;
     this.spawning = true;
     this.ttl = Infinity;
-    this.y = ch - 16;
+    this.y = ch + 32;
     this.frame = 0;
     this.shield = 100;
     this.fireLevel = 0;
+    this.fireType = 0;
     delay(() => {
       this.spawning = false;
       this.imune = false;
@@ -122,18 +163,19 @@ export class Ship extends GameObject {
 
     this.sprite = 2;
 
-    keyPressed(['d', 'arrowright']) && this.dx < 3 && (this.ddx = .3, this.sprite = 3);
-    keyPressed(['a', 'arrowleft']) && this.dx > -3 && (this.ddx = -.3, this.sprite = 4);
+    keyPressed(['d', 'arrowright']) && this.dx < 2 && (this.ddx = .3, this.sprite = 3);
+    keyPressed(['a', 'arrowleft']) && this.dx > -2 && (this.ddx = -.3, this.sprite = 4);
 
     if (!this.spawning) {
-      keyPressed(['s', 'arrowdown']) && this.dy < 3 && (this.ddy = .3);
-      keyPressed(['w', 'arrowup']) && this.dy > -3 && (this.ddy = -.3);
+      keyPressed(['s', 'arrowdown']) && this.dy < 2 && (this.ddy = .3);
+      keyPressed(['w', 'arrowup']) && this.dy > -2 && (this.ddy = -.3);
     }
 
-    !this.firing && keyPressed('space') && this.fire();
+    !this.firing && keyPressed('space') && this.fireType === 0 && this.fire();
+    !this.firing && keyPressed('space') && this.fireType === 1 && this.fire2();
 
     if (this.spawning) {
-      this.ddy = -.2;
+      this.ddy = -.1;
       this.scaleX = this.scaleY = clamp(1, 2, 2 - this.frame / 60);
     }
 
@@ -153,9 +195,9 @@ export class Ship extends GameObject {
     let boost = 1;
     this.ddy < 0 && (boost = this.frame % 10 < 5 ? 2 : 3);
     ctx.fillStyle = '#FFaa33';
-    ctx.fillRect(3, 7, 2, boost);
+    ctx.fillRect(7, 13, 2, boost);
     ctx.fillStyle = '#FF6633';
-    ctx.fillRect(this.frame % 10 < 5 ? 3 : 4, 7 + boost, 1, boost);
+    ctx.fillRect(this.frame % 10 < 5 ? 7 : 8, 13 + boost, 1, boost);
 
     if (this.fireLevel === 4) {
       ctx.fillStyle = '#FFF';
