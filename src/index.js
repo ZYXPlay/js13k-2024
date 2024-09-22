@@ -100,7 +100,7 @@ ctx.setTransform(1, 0, 0, 1, 0, 0);
         currentScene = menuScene();
         break;
       case 'game':
-        player.load('./music-2.xm');
+        player.load('./music-1.xm');
         currentScene = gameScene();
         break;
       case 'game-over':
