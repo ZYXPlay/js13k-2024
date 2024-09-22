@@ -105,6 +105,7 @@ Modplayer.prototype.load = function(url)
     asset.state="loading ("+Math.floor(100*oe.loaded/oe.total)+"%)..";
   };
   request.onload = function() {
+    var i;
     var buffer=new Uint8Array(request.response);
     this.state="parsing..";
     if (asset.player.parse(buffer)) {
@@ -144,6 +145,8 @@ Modplayer.prototype.load = function(url)
 // play loaded and parsed module with webaudio context
 Modplayer.prototype.play = function()
 {
+  var i;
+
   if (this.loading) return false;
   if (this.player) {
     if (this.context==null) this.createContext();
