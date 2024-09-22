@@ -727,8 +727,8 @@ Fasttracker.prototype.process_tick = function(mod) {
         mod.process_note(mod, p, ch);
       }
     }
-    i=mod.channel[ch].instrument;
-    si=mod.channel[ch].sampleindex;
+    var i=mod.channel[ch].instrument;
+    var si=mod.channel[ch].sampleindex;
 
     // kill empty instruments
     if (mod.channel[ch].noteon && !mod.instrument[i].samples) {
@@ -858,7 +858,7 @@ Fasttracker.prototype.mix = function(mod, bufs, buflen) {
     // mix channels
     for(var ch=0;ch<mod.channels;ch++)
     {
-      var fl=0.0, fr=0.0, fs=0.0;
+      var fl=0.0, fr=0.0, fs=0.0, t;
       var i=mod.channel[ch].instrument;
       var si=mod.channel[ch].sampleindex;
       

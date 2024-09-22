@@ -431,7 +431,7 @@ Modplayer.prototype.createContext = function()
 
 // scriptnode callback - pass through to player class
 Modplayer.prototype.mix = function(ape) {
-  var mod;
+  var mod, t;
 
   if (ape.srcElement) {
     mod=ape.srcElement.module;
