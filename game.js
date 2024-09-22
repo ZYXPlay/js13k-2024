@@ -2825,6 +2825,19 @@ function gameScene() {
     align: 'center',
   });
 
+  const textFireType1 = text({
+    x: 168,
+    y: 8,
+    text: 'B',
+    color: 'red',
+  });
+  const textFireType2 = text({
+    x: 168,
+    y: 8,
+    text: 'L',
+    color: 'lightblue',
+  });
+
   const textLives = text({
     x: 256 - 8 - 8 * 3,
     y: 8,
@@ -3231,6 +3244,8 @@ function gameScene() {
       textScore,
       textHi,
       textLives,
+      textFireType1,
+      textFireType2,
       fireTimerText,
     ],
     gameOver: false,
@@ -3240,6 +3255,17 @@ function gameScene() {
         blockingDialogInstance.update();
         this.paused = true;
         return;
+      }
+
+      textFireType1.text = `B${shipInstance.fireLevel}`;
+      textFireType2.text = `L${shipInstance.fireLevel}`;
+
+      if (shipInstance.fireType === 1) {
+        textFireType1.ttl = 0;
+        textFireType2.ttl = Infinity;
+      } else {
+        textFireType2.ttl = 0;
+        textFireType1.ttl = Infinity;
       }
 
       // if (frame < 40) {
@@ -4872,8 +4898,8 @@ Fasttracker.prototype.process_tick = function(mod) {
         mod.process_note(mod, p, ch);
       }
     }
-    i=mod.channel[ch].instrument;
-    si=mod.channel[ch].sampleindex;
+    var i=mod.channel[ch].instrument;
+    mod.channel[ch].sampleindex;
 
     // kill empty instruments
     if (mod.channel[ch].noteon && !mod.instrument[i].samples) {
@@ -5003,7 +5029,7 @@ Fasttracker.prototype.mix = function(mod, bufs, buflen) {
     // mix channels
     for(var ch=0;ch<mod.channels;ch++)
     {
-      var fl=0.0, fr=0.0, fs=0.0;
+      var fl=0.0, fr=0.0, fs=0.0, t;
       var i=mod.channel[ch].instrument;
       var si=mod.channel[ch].sampleindex;
       
@@ -5962,7 +5988,7 @@ Modplayer.prototype.createContext = function()
 
 // scriptnode callback - pass through to player class
 Modplayer.prototype.mix = function(ape) {
-  var mod;
+  var mod, t;
 
   if (ape.srcElement) {
     mod=ape.srcElement.module;
