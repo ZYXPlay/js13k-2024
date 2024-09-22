@@ -43,7 +43,10 @@ export class Scene {
   }
   render() {
     this.context.save();
+    // @todo This is a big bug. It's calling the update function instead of the render function.
+    // To fix it, all the frame related logic needs to be adjusted.
     this._uf && this._uf();
+    // this._rf && this._rf();
     this.children.forEach(child => {
       if (!child.isAlive) return child.render();
       child.isAlive() && child.render();

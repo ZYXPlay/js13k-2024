@@ -9,10 +9,6 @@ export default [{
     format: 'iife',
     sourcemap: false,
   },
-  external: [
-    'BassoonTracker',
-    'BassoonTracker.init',
-  ],
   treeshake: true,
   plugins: [
     nodeResolve(),
@@ -22,10 +18,9 @@ export default [{
         { src: 'assets/font.png', dest: 'build' },
         { src: 'assets/spritesheet.png', dest: 'build' },
         { src: 'assets/spritesheet16.png', dest: 'build' },
-        { src: 'src/lib/b-zip.js', dest: 'build' },
-        { src: 'assets/m_newhor.mod', dest: 'build', rename: 'menu.mod' },
-        { src: 'assets/dubmood_zabutom-track_tracking_compo_edit.xm', dest: 'build', rename: 'music.xm' },
-        { src: 'assets/m_farewl.mod', dest: 'build', rename: 'game-over.mod' },
+        { src: 'assets/flc_saha.xm', dest: 'build', rename: 'menu.xm' },
+        { src: 'assets/dubmood_zabutom-track_tracking_compo_edit.xm', dest: 'build', rename: 'music-1.xm' },
+        { src: 'assets/viraxor_-_game_over.xm', dest: 'build', rename: 'game-over.xm' },
       ],
     }),
     execute([

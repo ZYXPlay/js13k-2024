@@ -1,12 +1,12 @@
 import gameLoop from "./engine/game-loop";
 import { setContext } from "./engine/utils";
 import gameScene from "./scenes/game-scene";
-import { initKeys } from "./engine/keyboard";
+import { initKeys, onKey } from "./engine/keyboard";
 import { loadData, loadImage } from "./engine/assets";
 import { clearEvents, on } from "./engine/events";
 import menuScene from "./scenes/menu-scene";
 import gameOverScene from "./scenes/game-over-scene";
-import playerScene from "./scenes/player-scene";
+// import playerScene from "./scenes/player-scene";
 import zzfxm from "./engine/zzfxm";
 import { zzfxG } from "./engine/zzfx";
 import song1 from "./songs/depp";
@@ -24,11 +24,12 @@ import title from "./images/title";
 import gameOver from "./images/game-over";
 import saturn from "./images/saturn";
 import font from "./images/font";
+import Modplayer from './engine/player';
+import laser from "./sounds/laser";
 
 const ctx = setContext(document.getElementById('c').getContext('2d', { willReadFrequently: true }));
 ctx.imageSmoothingEnabled = false;
 ctx.setTransform(1, 0, 0, 1, 0, 0);
-BassoonTracker.init(true);
 
 (async () => {
   initKeys();
@@ -43,6 +44,7 @@ BassoonTracker.init(true);
   await loadData('transition', zzfxG, transition);
   await loadData('engineSlowdown', zzfxG, engineSlowdown);
   await loadData('bigExplosion', zzfxG, bigExplosion);
+  await loadData('laser', zzfxG, laser);
   // await loadImage('font.png');
   await loadImage('spritesheet.png');
   await loadImage('spritesheet16.png');
@@ -81,34 +83,45 @@ BassoonTracker.init(true);
   await fontImage.generate(378, 9);
   await loadImage('font-lightblue.png', fontImage.image);
 
-  function changeScene(scene, props) {
-    let track = 'menu.mod';
+  onKey('m', () => {
+    if (player.playing) {
+      player.stop();      
+    } else {
+      player.play();
+    }
+  });
+
+  function changeScene(scene, props = {}) {
     clearEvents(['change-scene']);
 
     switch (scene) {
       case 'menu':
-        track = "menu.mod";
+        player.load('./menu.xm');
         currentScene = menuScene();
         break;
       case 'game':
-        track = "music.xm";
+        player.load('./music-2.xm');
         currentScene = gameScene();
         break;
       case 'game-over':
-        track = "game-over.mod";
+        player.load('./game-over.xm');
         currentScene = gameOverScene(props);
         break;
 
       default:
         break;
     }
-    BassoonTracker.load(track,true);
   }
 
+  const player = new Modplayer();
+  player.setrepeat(true);
+  player.onReady = () => player.play();
+
   on('change-scene', (scene, props) => changeScene(scene, props));
+  on('song-end', () => console.log('song-end'));
 
   let currentScene = loadingScene();
-  let overlayScene = playerScene();
+  // let overlayScene = playerScene();
 
   const loop = gameLoop({
     update(dt) {

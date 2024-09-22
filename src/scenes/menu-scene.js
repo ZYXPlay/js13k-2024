@@ -12,6 +12,9 @@ export default function menuScene() {
   onKey(['enter'], () => {
     emit('change-scene', 'game');
   });
+  onKey(['c'], () => {
+    emit('change-scene', 'credits', { reset: false });
+  });
   offKey(['esc']);
   const starPool = starfield(90);
 
@@ -26,12 +29,25 @@ export default function menuScene() {
     image: imageAssets['title.png'],
     update() {
       // this.scaleX = this.scaleY = 0.95 + Math.sin(this.frame / 10) * 0.05;
-      this.scaleX = this.scaleY = clamp(0, 1, this.frame / 200);
+      this.scaleX = this.scaleY = clamp(0, 1, this.frame / 80);
       this.advance();
     },
     draw() {
       if (this.frame < 2) return;
       const { context: ctx } = this;
+
+      if (this.frame > 80 && this.frame < 200) {
+        ctx.save();
+        // ctx.filter = `blur(${(this.frame - 80) / 10}px)`;
+        ctx.globalAlpha = 1 - ((this.frame - 80) / 120);
+        const scale = 1 + ((this.frame - 80) / 10) * 0.05;
+        ctx.translate(128, 50);
+        ctx.scale(scale, scale);
+        ctx.translate(-128, -50);
+        ctx.drawImage(this.image, 0, 0);
+        ctx.restore();
+      }
+
       ctx.drawImage(this.image, 0, 0);
     },
   });
@@ -111,30 +127,30 @@ export default function menuScene() {
     },
   });
 
-  const titleText = text({
-    x: 128,
-    y: 24,
-    text: 'BLIND FEAR',
-    align: 'center',
-    color: 'red',
-    scaleX: 2,
-    scaleY: 4,
-  });
-
   const editionText = text({
     x: 128,
-    y: 128,
+    y: 120,
     text: 'DIRECTORS CUT EDITION',
     align: 'center',
-    color: 'yellow',
+    color: 'lightblue',
   });
 
   const hiscoreText = text({
     x: 128,
-    y: 128 + 24,
+    y: 128 + 16,
     text: 'HI SCORE: 0',
     align: 'center',
     color: 'green',
+    colorIndex: 0,
+    update() {
+      const colors = ['red', 'yellow', 'white', 'green', 'lightblue', 'lightgreen'];
+      this.frame % 40 === 0 && (this.colorIndex++, this.colorIndex > 5 && (this.colorIndex = 0));
+      this.color = colors[this.colorIndex];
+      const fontName = this.color ? `font-${this.color}.png` : 'font.png';
+      this.spritesheet = imageAssets[fontName];
+      this.advance();
+      // console.log(this.color, this.frame);
+    }
   });
 
   const gameByText = text({
@@ -148,7 +164,7 @@ export default function menuScene() {
 
   const controlsText = text({
     x: 128,
-    y: 128 + 48,
+    y: 128 + 40,
     text: 'ARROWS OR WASD TO MOVE\nSPACE TO SHOOT',
     lineHeight: 16,
     align: 'center',
@@ -156,13 +172,26 @@ export default function menuScene() {
 
   const startText = text({
     x: 128,
-    y: 240 - 16,
+    y: 240 - 32,
     text: 'ENTER TO START',
     color: 'lightgreen',
     align: 'center',
   });
 
   hiscoreText.text = `HIGH SCORE: ${localStorage.getItem('hiscore') || 0}`;
+
+  const creditsText = text({
+    x: 256,
+    y: 240 - 12,
+    text: 'GAME BY MARCO FERNANDES @ GRAPHICS BY KENNEY.NL @ MUSIC: START SCREEN BY DEPP @ GAME BY JUKEBOX @ GAME OVER BY DEPP @ SOUND EFFECTS ZAPSPLAT.COM @ GREETINGS TO STEVEN LAMBERT, KONTRAJS IS THE BEST! FRANK FORCE, ZZFX FTW!1!! ANDRZEJ MAZUR, MR. JS13K!. @@@ THANKS FOR PLAYING!',
+    color: 'yellow',
+    align: 'lef',
+    dx: -0.5,
+    update() {
+      this.x < -this.text.length * 8 && (this.x = 256);
+      this.advance();
+    },
+  });
 
   const s = scene({
     frame: 0,
@@ -171,6 +200,7 @@ export default function menuScene() {
       saturn,
       randomShip,
       startText,
+      creditsText,
     ],
     update() {
       this.frame > 40 && this.frame < 180 && this.frame % 20 === 0 && starPool.decreaseVel(2);
@@ -182,7 +212,7 @@ export default function menuScene() {
     s.add(title);
     s.add(shineEffect);
     zzfxP(dataAssets['engineSlowdown']);
-  }, 500);
+  }, 100);
 
   // delay(() => {
   //   s.add(saturn);
@@ -190,11 +220,11 @@ export default function menuScene() {
 
   delay(() => {
     s.add(editionText);
-  }, 2000);
+  }, 2500);
 
   delay(() => {
     s.add(hiscoreText);
-  }, 2500);
+  }, 3000);
 
   // delay(() => {
   //   s.add(gameByText);
@@ -202,7 +232,7 @@ export default function menuScene() {
 
   delay(() => {
     s.add(controlsText);
-  }, 3000);
+  }, 3500);
 
   return s;
 }

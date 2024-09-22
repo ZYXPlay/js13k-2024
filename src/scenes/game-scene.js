@@ -17,7 +17,6 @@ import { checkCollisions } from "./game-collisions";
 import { offKey, onKey } from "../engine/keyboard";
 import { powerup } from "../entities/powerup";
 import { getLevelLastFrame, processLevel, totalLevels } from "../levels";
-import { player } from "../engine/globals";
 import { dataAssets } from "../engine/assets";
 
 export default function gameScene() {
@@ -26,13 +25,6 @@ export default function gameScene() {
   });
   onKey(['p'], () => {
     emit('pause');
-  });
-  onKey(['m'], () => {
-    if (player.playing) {
-      player.stop();
-    } else {
-      player.start();
-    }
   });
   offKey(['enter']);
   onKey(['enter'], () => dialogInstance.skip());
@@ -58,6 +50,11 @@ export default function gameScene() {
   const shipBulletPool = pool({
     create: gameObject,
     maxSize: 40,
+  });
+
+  const shipLaserPool = pool({
+    create: gameObject,
+    maxSize: 80,
   });
 
   const enemyBulletPool = pool({
@@ -232,6 +229,38 @@ export default function gameScene() {
       update() {
         this.advance();
         if (this.y < 0) this.ttl = 0;
+      }
+    });
+  });
+
+  on('ship-fire-laser', (x, y, dx, volume = .4) => {
+    const laser = dataAssets['laser'];
+    laser[0] = volume;
+    zzfxP(laser);
+    shipLaserPool.get({
+      name: 'ship-bullet',
+      x,
+      y,
+      width: 2,
+      height: 18,
+      dy: -10,
+      dx,
+      rotation: dx / 10,
+      color: null,
+      // sprite: 16,
+      ttl: 100,
+      update() {
+        this.advance();
+        if (this.y < 0) this.ttl = 0;
+      },
+      draw() {
+        const { context: ctx } = this;
+        ctx.fillStyle = '#0cc';
+        ctx.fillRect(-1, -1, this.width + 2, this.height);
+        ctx.fillStyle = '#0ff';
+        ctx.fillRect(0, 0, this.width, this.height);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(1, 1, this.width / 2, this.height);
       }
     });
   });
@@ -457,6 +486,7 @@ export default function gameScene() {
       visionEffect,
       starPool,
       shipBulletPool,
+      shipLaserPool,
       enemyBulletPool,
       shipInstance,
       enemyPool,
@@ -505,6 +535,13 @@ export default function gameScene() {
         qtShipBullets.add(bullet, asteroidPool.getAliveObjects(), enemyPool.getAliveObjects(), bossPool.getAliveObjects());
         checkCollisions(bullet, qtShipBullets.get(bullet));
       });
+
+      shipLaserPool.getAliveObjects().forEach(bullet => {
+        qtShipBullets.clear();
+        qtShipBullets.add(bullet, asteroidPool.getAliveObjects(), enemyPool.getAliveObjects(), bossPool.getAliveObjects());
+        checkCollisions(bullet, qtShipBullets.get(bullet));
+      });
+
 
       qtShip.clear();
       qtShip.add(
